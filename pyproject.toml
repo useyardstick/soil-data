@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "soil-data"
+version = "0.0.1"
+authors = [
+  { name = "Yard Stick", email = "software@useyardstick.com" },
+]
+description = "Tools for fetching soil datasets"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "boto3",
+  "botocore",
+  "defusedxml",
+  "geopandas ~= 1.0.1",
+  "numpy",
+  "pandas",
+  "pyproj",
+  "rasterio ~= 1.4.3",
+  "requests",
+  "shapely",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+env_override_existing_values = 1
+env_files = [".env.test"]

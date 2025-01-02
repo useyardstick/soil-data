@@ -1,0 +1,11 @@
+--editable .
+boto3-stubs ~= 1.35.90
+moto ~= 5.0.25
+mypy ~= 1.14.1
+pandas-stubs ~= 2.2.2.240807
+pytest ~= 8.3.4
+pytest-dotenv ~= 0.5.2
+requests-mock ~= 1.12.1
+responses ~= 0.25.3
+types-defusedxml ~= 0.7.0.20240218
+types-requests == 2.31.0.6
