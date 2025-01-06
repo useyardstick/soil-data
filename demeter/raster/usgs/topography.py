@@ -4,7 +4,9 @@ https://data.usgs.gov/datacatalog/data/USGS:3a81321b-c153-416f-98b7-cc8e5f0e17c3
 
 Example:
 
-    raster, transform, crs = fetch_and_merge_rasters("path/to/boundaries.geojson")
+```python
+raster, transform, crs = fetch_and_merge_rasters("path/to/boundaries.geojson")
+```
 """
 
 import itertools

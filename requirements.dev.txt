@@ -4,6 +4,7 @@ moto ~= 5.0.25
 mypy ~= 1.14.1
 pandas-stubs ~= 2.2.2.240807
 pre-commit ~= 4.0.1
+pydoc-markdown ~= 4.8.2
 pytest ~= 8.3.4
 pytest-dotenv ~= 0.5.2
 requests-mock ~= 1.12.1

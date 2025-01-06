@@ -4,16 +4,18 @@ to calculate Normalized Difference Vegetation Index (NDVI) rasters.
 
 Example:
 
-    os.environ["COPERNICUS_AWS_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu/"
-    os.environ["COPERNICUS_AWS_ACCESS_KEY_ID"] = ...
-    os.environ["COPERNICUS_AWS_SECRET_ACCESS_KEY"] = ...
+```python
+os.environ["COPERNICUS_AWS_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu/"
+os.environ["COPERNICUS_AWS_ACCESS_KEY_ID"] = ...
+os.environ["COPERNICUS_AWS_SECRET_ACCESS_KEY"] = ...
 
-    rasters = fetch_and_build_ndvi_rasters(
-        "path/to/boundaries.geojson",
-        year=2024,
-        month=9,
-        statistics=["mean", "min", "max", "stddev"],
-    )
+rasters = fetch_and_build_ndvi_rasters(
+    "path/to/boundaries.geojson",
+    year=2024,
+    month=9,
+    statistics=["mean", "min", "max", "stddev"],
+)
+```
 
 Sentinel-2 rasters are projected using the Universal Transverse Mercator (UTM)
 system. If the input geometries span multiple UTM zones, this function will
@@ -387,8 +389,8 @@ def merge_and_crop_rasters(
 def extract_surface_reflectance(pixels: numpy.ndarray) -> numpy.ma.MaskedArray:
     """
     Sentinel-2 surface reflectance values are given in the 1-10000 range, with
-    0 as the nodata value. Scale reflectance to the 0-1 range, and add a
-    nodata mask.
+    0 as the nodata value. Scale reflectance to the 0-1 range, and add a nodata
+    mask.
     """
     return numpy.ma.masked_equal(pixels, 0) / 10000
 
@@ -401,9 +403,9 @@ def _save_test_fixture(raster_path, crop_to):
     """
     Copy downloaded rasters to the test fixtures directory.
 
-    To keep file sizes small, crop rasters to the bounding boxes of the
-    input geometries, plus a small buffer. Detector footprint masks are
-    copied unmodified, as they are already quite small.
+    To keep file sizes small, crop rasters to the bounding boxes of the input
+    geometries, plus a small buffer. Detector footprint masks are copied
+    unmodified, as they are already quite small.
     """
     key = os.path.relpath(raster_path, get_cache_directory())
     fixture_path = os.path.join(_FIXTURES_DIRECTORY, key)

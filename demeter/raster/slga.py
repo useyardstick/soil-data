@@ -4,20 +4,16 @@ Tools for fetching raster data from the Soil and Landscape Grid of Australia
 
 Example:
 
-    slga_om = fetch_slga_data_for_depth_range(
-        geometries=[
-            {
-                "type": "Polygon",
-                "coordinates": [...],
-            },
-            ...
-        ],
-        soil_property=SoilProperty.ORGANIC_CARBON,
-        start_depth=0,
-        end_depth=100,
-    )
-    mean_raster, transform, crs = slga_om.mean
-    stddev_raster, _, _ = slga_om.stddev
+```python
+slga_om = fetch_slga_data_for_depth_range(
+    "/path/to/geometries.geojson",
+    soil_property=SoilProperty.ORGANIC_CARBON,
+    start_depth=0,
+    end_depth=100,
+)
+mean_raster, transform, crs = slga_om.mean
+stddev_raster, _, _ = slga_om.stddev
+```
 """
 
 __all__ = [
@@ -143,7 +139,7 @@ def estimate_carbon_stock(
 
 def fetch_slga_data_for_depth_range(
     geometries: Union[str, geopandas.GeoSeries, geopandas.GeoDataFrame],
-    soil_property: Union[str, SoilProperty],
+    soil_property: SoilProperty,
     *,
     start_depth: int = 0,
     end_depth: int,
@@ -156,7 +152,8 @@ def fetch_slga_data_for_depth_range(
     return a depth-weighted average across the entire depth range.
 
     If `calculate_standard_deviation` is True (default), also return a raster
-    showing the standard deviation of the distribution at each pixel.
+    showing the standard deviation at each pixel, inferred from the p5-p95
+    split (assuming normal distribution).
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
@@ -165,8 +162,6 @@ def fetch_slga_data_for_depth_range(
 
     if len(geometries) == 0:
         raise ValueError("Must provide at least one geometry")
-
-    soil_property = SoilProperty(soil_property)
 
     # Download mean, p5 and p95 tiles for all depth layers down to the given
     # `end_depth`. Organize them in a dictionary by depth and statistic, e.g.:

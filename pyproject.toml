@@ -37,3 +37,14 @@ module = [
   "shapely.*",
 ]
 follow_untyped_imports = true
+
+[[tool.pydoc-markdown.loaders]]
+type = "python"
+search_path = ["."]
+modules = [
+  "demeter.raster.polaris",
+  "demeter.raster.slga",
+  "demeter.raster.usgs.topography",
+  "demeter.raster.usgs.hydrography",
+  "demeter.raster.sentinel2.ndvi",
+]

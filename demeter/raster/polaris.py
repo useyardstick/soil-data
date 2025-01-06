@@ -4,20 +4,16 @@ http://hydrology.cee.duke.edu/POLARIS/PROPERTIES/v1.0/
 
 Example:
 
-    polaris_om = fetch_polaris_data_for_depth_range(
-        geometries=[
-            {
-                "type": "Polygon",
-                "coordinates": [...],
-            },
-            ...
-        ],
-        soil_property="om",
-        start_depth=0,
-        end_depth=100,
-    )
-    mean_raster, transform, crs = polaris_om.mean
-    stddev_raster, _, _ = polaris_om.stddev
+```python
+polaris_om = fetch_polaris_data_for_depth_range(
+    "/path/to/geometries.geojson",
+    soil_property="om",
+    start_depth=0,
+    end_depth=100,
+)
+mean_raster, transform, crs = polaris_om.mean
+stddev_raster, _, _ = polaris_om.stddev
+```
 """
 
 __all__ = [
@@ -172,7 +168,8 @@ def fetch_polaris_data_for_depth_range(
     and return a depth-weighted average across the entire depth range.
 
     If `calculate_standard_deviation` is True (default), also return a raster
-    showing the standard deviation of the distribution at each pixel.
+    showing the standard deviation at each pixel, inferred from the p5-p95
+    split (assuming normal distribution).
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
@@ -329,16 +326,8 @@ def fetch_polaris_data(
     """
     Low-level interface to POLARIS.
 
-    Download raster images from POLARIS, merge them, and return a 2D numpy
-    array containing the values from the merged images.
-
-    Arguments:
-    - geometries: The locations to fetch.
-    - soil_property: The soil property to fetch, from the SoilProperty enum.
-    - statistic: The statistic to fetch (mean, median, etc.) from the Statistic
-      enum.
-    - depth: POLARIS has data for depths down to 2 meters. Pass a depth to
-      fetch from the Depth enum.
+    Download raster images from POLARIS, merge them, and return a raster
+    containing the values from the merged images.
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)

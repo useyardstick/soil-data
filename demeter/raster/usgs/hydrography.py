@@ -4,7 +4,9 @@ https://www.usgs.gov/national-hydrography/access-national-hydrography-products
 
 Example:
 
-    raster, transform, crs = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.geojson")
+```python
+raster, transform, crs = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.geojson")
+```
 """
 
 import os
