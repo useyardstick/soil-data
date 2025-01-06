@@ -1,5 +1,5 @@
 import re
-from collections.abc import Collection, Hashable, Iterable, Sequence, Set
+from collections.abc import Iterable, Sequence
 from itertools import chain, combinations
 from typing import NamedTuple, Union
 

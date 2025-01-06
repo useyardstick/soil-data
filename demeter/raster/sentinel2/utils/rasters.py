@@ -7,8 +7,6 @@ from defusedxml import ElementTree
 
 from demeter.raster.sentinel2.constants import Band, Resolution
 from demeter.raster.sentinel2.utils.download import download_keys
-from demeter.raster.sentinel2.utils.search import find_safe_files
-from demeter.raster.sentinel2.utils.tiles import TileMetadata
 
 # Example: "S2B_MSIL2A_20240901T172859_N0511_R055_T14TMM_20240901T215725.SAFE"
 SAFE_FILENAME_PATTERN = re.compile(

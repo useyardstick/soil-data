@@ -24,6 +24,12 @@ Install development dependencies:
 pip install -r requirements.dev.txt
 ```
 
+Install pre-commit hooks:
+
+```
+pre-commit install
+```
+
 Run tests:
 
 ```

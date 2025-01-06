@@ -20,6 +20,9 @@ dependencies = [
   "shapely",
 ]
 
+[tool.autoflake]
+remove-all-unused-imports = true
+
 [tool.isort]
 profile = "black"
 

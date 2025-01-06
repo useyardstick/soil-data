@@ -34,7 +34,7 @@ import os
 from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum, unique
-from typing import Optional, TypeVar, Union
+from typing import Optional, Union
 from urllib.parse import urljoin
 
 import geopandas
@@ -117,7 +117,7 @@ def estimate_carbon_stock(
     bulk density rasters from POLARIS, then combining them into a estimated
     carbon stock raster.
     """
-    organic_matter, bulk_density = [
+    organic_matter, bulk_density = (
         fetch_polaris_data_for_depth_range(
             geometries,
             soil_property=soil_property,
@@ -126,7 +126,7 @@ def estimate_carbon_stock(
             calculate_standard_deviation=calculate_standard_deviation,
         )
         for soil_property in [SoilProperty.ORGANIC_MATTER, SoilProperty.BULK_DENSITY]
-    ]
+    )
 
     assert organic_matter.mean.transform == bulk_density.mean.transform
     transform = organic_matter.mean.transform

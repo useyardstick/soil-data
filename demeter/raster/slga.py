@@ -96,7 +96,7 @@ def estimate_carbon_stock(
     bulk density rasters from SLGA, then combining them into a estimated carbon
     stock raster.
     """
-    organic_carbon, bulk_density = [
+    organic_carbon, bulk_density = (
         fetch_slga_data_for_depth_range(
             geometries,
             soil_property=soil_property,
@@ -105,7 +105,7 @@ def estimate_carbon_stock(
             calculate_standard_deviation=calculate_standard_deviation,
         )
         for soil_property in [SoilProperty.ORGANIC_CARBON, SoilProperty.BULK_DENSITY]
-    ]
+    )
 
     assert organic_carbon.mean.shape == bulk_density.mean.shape
 

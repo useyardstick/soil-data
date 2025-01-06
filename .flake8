@@ -1,0 +1,4 @@
+[flake8]
+extend-ignore =
+  # Ignore all style warnings because we use black
+  E,

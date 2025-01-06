@@ -1,5 +1,4 @@
 import geopandas
-import numpy
 import pytest
 import rasterio.transform
 
