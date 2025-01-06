@@ -177,6 +177,8 @@ def fetch_polaris_data_for_depth_range(
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
 
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
+
     if len(geometries) == 0:
         raise ValueError("Must provide at least one geometry")
 
@@ -340,6 +342,8 @@ def fetch_polaris_data(
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
+
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
 
     if len(geometries) == 0:
         raise ValueError("Must provide at least one geometry")

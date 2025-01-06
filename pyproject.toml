@@ -30,3 +30,11 @@ profile = "black"
 [tool.pytest.ini_options]
 env_override_existing_values = 1
 env_files = [".env.test"]
+
+[[tool.mypy.overrides]]
+module = [
+  "geopandas.*",
+  "rasterio.*",
+  "shapely.*",
+]
+follow_untyped_imports = true

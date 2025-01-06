@@ -115,6 +115,8 @@ def fetch_and_build_ndvi_rasters(
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
 
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
+
     tiles = list(find_tiles_for_geometries(geometries))
     print(
         f"Searching for rasters in tiles: {sorted({tile_id for tile_id, _ in tiles})}"

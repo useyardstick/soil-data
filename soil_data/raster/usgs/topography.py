@@ -38,6 +38,8 @@ def fetch_and_merge_rasters(
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
 
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
+
     rasters = list(fetch_rasters(geometries))
 
     return merge_and_crop_rasters(
@@ -54,6 +56,8 @@ def fetch_rasters(
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
+
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
 
     # FIXME: .to_crs(epsg=4269) doesn't seem to do anything for WGS84 inputs.
     projected_geometries = geometries.geometry.to_crs(RASTER_CRS)

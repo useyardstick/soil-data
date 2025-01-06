@@ -31,6 +31,8 @@ def find_tiles_for_geometries(
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
 
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
+
     # TODO: some Sentinel-2 tiles slightly overlap UTM zone boundaries, because
     # they are projected and the projected edge of the tile overlaps the UTM
     # zone edge meridian. When the input geometries span multiple UTM zones,
@@ -76,7 +78,7 @@ def find_tiles_for_geometries(
             area_of_use.bounds
         )
         geometries_projected = geometries_clipped_to_utm_zone.to_crs(
-            epsg=utm_zone.code
+            epsg=int(utm_zone.code)
         ).union_all()
 
         # Select the minimum number of tiles that cover the input geometries:
@@ -107,6 +109,8 @@ def find_utm_zones(
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
+
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
 
     geometries = geometries.to_crs("EPSG:4326")
     bounds = bounds_snapped_to_grid(geometries, base=6)
@@ -143,3 +147,5 @@ def _select_tiles(
             tiles = tiles_intersecting.loc[list(tile_ids)]
             if tiles.union_all().covers(geometries_union):
                 return tiles
+
+    raise Exception("Could not find tiles that cover the input geometries")

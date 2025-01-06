@@ -58,6 +58,8 @@ def fetch_and_merge_rasters(
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
 
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
+
     rasters = list(fetch_rasters(raster_filename, geometries))
 
     return merge_and_crop_rasters(
@@ -76,6 +78,8 @@ def fetch_rasters(
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
+
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
 
     if geometries.empty:
         raise ValueError("No geometries provided")
@@ -116,6 +120,8 @@ def find_hu4_codes(
     """
     if isinstance(geometries, str):
         geometries = geopandas.read_file(geometries)
+
+    assert isinstance(geometries, (geopandas.GeoSeries, geopandas.GeoDataFrame))
 
     # TODO: project both input geometries and HU4 regions to EPSG:5070 first
     # for more accurate intersection in CONUS
