@@ -1,0 +1,42 @@
+name: CI Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.dev.txt
+
+      - name: Run mypy type checks
+        run: mypy .
+
+      # TODO: use test fixtures instead of fetching real data in tests
+      - name: Cache USGS rasters
+        uses: actions/cache@v4
+        with:
+          path: .usgs_cache/**/*.tif
+          key: usgs-cache-${{ hashFiles('.usgs_cache/**/*.tif') }}
+          restore-keys: |
+            usgs-cache-
+
+      - name: Run Tests
+        run: pytest --durations=10 --durations-min=1 -vv
