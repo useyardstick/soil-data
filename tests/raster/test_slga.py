@@ -5,7 +5,7 @@ import geopandas
 import pytest
 import rasterio
 
-from soil_data.raster import slga
+from demeter.raster import slga
 
 
 @pytest.fixture

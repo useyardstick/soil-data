@@ -37,23 +37,23 @@ import numpy
 import rasterio
 from pyproj import CRS
 
-from soil_data.raster.sentinel2.constants import CLOUD_VALUES, Band, Resolution
-from soil_data.raster.sentinel2.utils.download import download_keys, get_cache_directory
-from soil_data.raster.sentinel2.utils.merge import (
+from demeter.raster.sentinel2.constants import CLOUD_VALUES, Band, Resolution
+from demeter.raster.sentinel2.utils.download import download_keys, get_cache_directory
+from demeter.raster.sentinel2.utils.merge import (
     merge_max,
     merge_mean,
     merge_min,
     merge_stddev,
 )
-from soil_data.raster.sentinel2.utils.rasters import (
+from demeter.raster.sentinel2.utils.rasters import (
     DetectorFootprintMaskMetadata,
     RasterMetadata,
     SafeMetadata,
     list_raster_keys,
 )
-from soil_data.raster.sentinel2.utils.search import find_safe_files
-from soil_data.raster.sentinel2.utils.tiles import find_tiles_for_geometries
-from soil_data.raster.utils import (
+from demeter.raster.sentinel2.utils.search import find_safe_files
+from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
+from demeter.raster.utils import (
     Raster,
     check_for_overlapping_pixels,
     mask,

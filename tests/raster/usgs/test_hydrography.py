@@ -3,7 +3,7 @@ import numpy
 import pytest
 import rasterio.transform
 
-from soil_data.raster.usgs.hydrography import (
+from demeter.raster.usgs.hydrography import (
     RASTER_CRS,
     fetch_and_merge_rasters,
     find_hu4_codes,

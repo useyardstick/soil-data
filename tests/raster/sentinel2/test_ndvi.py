@@ -10,8 +10,8 @@ import rasterio.transform
 import responses
 from moto import mock_aws
 
-from soil_data.raster.sentinel2.constants import S3_BUCKET_NAME
-from soil_data.raster.sentinel2.ndvi import (
+from demeter.raster.sentinel2.constants import S3_BUCKET_NAME
+from demeter.raster.sentinel2.ndvi import (
     _SAVE_TEST_FIXTURES,
     fetch_and_build_ndvi_rasters,
 )

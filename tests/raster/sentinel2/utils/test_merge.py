@@ -2,7 +2,7 @@ import numpy
 import pytest
 import rasterio
 
-from soil_data.raster.sentinel2.utils.merge import (
+from demeter.raster.sentinel2.utils.merge import (
     merge_max,
     merge_mean,
     merge_min,

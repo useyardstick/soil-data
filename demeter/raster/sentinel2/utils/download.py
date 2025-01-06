@@ -5,7 +5,7 @@ from functools import partial
 
 import boto3
 
-from soil_data.raster.sentinel2.constants import S3_BUCKET_NAME
+from demeter.raster.sentinel2.constants import S3_BUCKET_NAME
 
 S3_PREFIX = "Sentinel-2/MSI/L2A/"
 

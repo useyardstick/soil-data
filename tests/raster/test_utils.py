@@ -3,7 +3,7 @@ import numpy
 import pytest
 import rasterio
 
-from soil_data.raster.utils import Raster, mask_raster, merge
+from demeter.raster.utils import Raster, mask_raster, merge
 
 
 def test_mask_raster():

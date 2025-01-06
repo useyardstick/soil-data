@@ -8,12 +8,12 @@ import shapely
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import CRSInfo, query_utm_crs_info
 
-from soil_data.raster.sentinel2.constants import (
+from demeter.raster.sentinel2.constants import (
     ORBITS_CONUS_PATH,
     SWATH_WIDTH_KM,
     TILES_CONUS_PATH,
 )
-from soil_data.raster.utils import bounds_snapped_to_grid
+from demeter.raster.utils import bounds_snapped_to_grid
 
 
 class TileMetadata(NamedTuple):

@@ -3,8 +3,8 @@ from collections.abc import Iterable, Sequence
 
 import requests
 
-from soil_data.raster.sentinel2.constants import ODATA_PRODUCTS_ENDPOINT, S3_BUCKET_NAME
-from soil_data.raster.sentinel2.utils.tiles import TileMetadata
+from demeter.raster.sentinel2.constants import ODATA_PRODUCTS_ENDPOINT, S3_BUCKET_NAME
+from demeter.raster.sentinel2.utils.tiles import TileMetadata
 
 
 def find_safe_files(

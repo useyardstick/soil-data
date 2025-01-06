@@ -41,8 +41,8 @@ import geopandas
 import numpy
 import requests
 
-from soil_data.constants import OM_TO_SOC
-from soil_data.raster.utils import (
+from demeter.constants import OM_TO_SOC
+from demeter.raster.utils import (
     DepthEnum,
     Raster,
     bounds_snapped_to_grid,

@@ -1,7 +1,7 @@
 import geopandas
 import pytest
 
-from soil_data.raster.sentinel2.utils.tiles import find_tiles_for_geometries
+from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
 
 
 @pytest.fixture

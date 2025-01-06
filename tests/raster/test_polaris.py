@@ -6,7 +6,7 @@ import geopandas
 import pytest
 import rasterio.transform
 
-from soil_data.raster import polaris
+from demeter.raster import polaris
 
 FIXTURES = {
     filename: Path("tests", "raster", "fixtures", "polaris", filename).read_bytes()

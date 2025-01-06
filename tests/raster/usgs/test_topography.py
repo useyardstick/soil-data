@@ -3,7 +3,7 @@ import numpy
 import pytest
 import rasterio.transform
 
-from soil_data.raster.usgs.topography import RASTER_CRS, fetch_and_merge_rasters
+from demeter.raster.usgs.topography import RASTER_CRS, fetch_and_merge_rasters
 
 
 @pytest.fixture

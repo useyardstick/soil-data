@@ -1,14 +1,10 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "soil-data"
+name = "demeter"
 version = "0.0.1"
 authors = [
   { name = "Yard Stick", email = "software@useyardstick.com" },
 ]
-description = "Tools for fetching soil datasets"
+description = "Tools for fetching spatial datasets for agriculture"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [

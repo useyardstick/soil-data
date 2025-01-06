@@ -12,8 +12,8 @@ from typing import Iterable, Union
 
 import geopandas
 
-from soil_data.raster.usgs.utils import download_from_s3, merge_and_crop_rasters
-from soil_data.raster.utils import Raster, bounds_snapped_to_grid
+from demeter.raster.usgs.utils import download_from_s3, merge_and_crop_rasters
+from demeter.raster.utils import Raster, bounds_snapped_to_grid
 
 # USGS topography rasters at 1/3 arc-second resolution are stored in S3 under:
 S3_PREFIX = "StagedProducts/Elevation/13/TIFF/current/"

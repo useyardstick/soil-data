@@ -4,11 +4,8 @@ import boto3
 from botocore import UNSIGNED
 from botocore.client import Config
 
-from soil_data.raster.usgs.constants import (
-    CACHED_RASTER_FILES_DIRECTORY,
-    S3_BUCKET_NAME,
-)
-from soil_data.raster.utils import (
+from demeter.raster.usgs.constants import CACHED_RASTER_FILES_DIRECTORY, S3_BUCKET_NAME
+from demeter.raster.utils import (
     Raster,
     check_for_overlapping_pixels,
     mask_raster,

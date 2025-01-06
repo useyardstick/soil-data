@@ -41,7 +41,7 @@ import rasterio
 import rasterio.transform
 import rasterio.windows
 
-from soil_data.raster.utils import (
+from demeter.raster.utils import (
     DepthEnum,
     Raster,
     calculate_carbon_stock_stddev,
