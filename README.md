@@ -3,6 +3,13 @@ Demeter
 
 Tools for fetching spatial datasets for agriculture.
 
+Installation
+------------
+
+```
+pip install git+https://github.com/useyardstick/demeter.git
+```
+
 Usage
 -----
 
