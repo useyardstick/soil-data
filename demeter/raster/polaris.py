@@ -27,15 +27,15 @@ __all__ = [
 
 import itertools
 import os
+import shutil
 from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum, unique
 from typing import Optional, Union
-from urllib.parse import urljoin
 
 import geopandas
 import numpy
-import requests
+import smart_open
 
 from demeter.constants import OM_TO_SOC
 from demeter.raster.utils import (
@@ -49,7 +49,9 @@ from demeter.raster.utils import (
     merge,
 )
 
-BASE_URL = "http://hydrology.cee.duke.edu/POLARIS/PROPERTIES/v1.0/"
+BASE_URL = os.environ.get(
+    "POLARIS_BASE_URL", "http://hydrology.cee.duke.edu/POLARIS/PROPERTIES/v1.0/"
+)
 
 # POLARIS tiles are 1° by 1°
 PolarisTile = tuple[int, int, int, int]
@@ -380,15 +382,44 @@ def _download_polaris_tile(
         print(f"Cache hit: {local_path}")
         return local_path
 
-    # If not, download from Duke:
-    url = urljoin(BASE_URL, path)
-    print(f"Downloading {url}")
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
+    # If not, try to download from the remote cache, if configured:
+    # NOTE: Partial files shouldn't show up in S3, so I don't think there's a race condition here.
+    # https://stackoverflow.com/questions/38173710/amazon-s3-can-clients-see-the-file-before-upload-is-complete
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
-    with open(local_path, "wb") as file:
-        for chunk in response.iter_content(chunk_size=None):
-            file.write(chunk)
+    remote_cache = os.environ.get("POLARIS_REMOTE_CACHE", None)
+    remote_cache_path = (
+        f"{remote_cache.removesuffix('/')}/{path}" if remote_cache else None
+    )
+    if remote_cache_path:
+        try:
+            with (
+                smart_open.open(remote_cache_path, "rb") as remote_cache_file,
+                open(local_path, "wb") as local_file,
+            ):
+                shutil.copyfileobj(remote_cache_file, local_file)
+        except OSError:
+            print(f"Remote cache miss: {remote_cache_path}")
+        else:
+            print(f"Downloaded from remote cache: {remote_cache_path}")
+            return local_path
+
+    # If we don't have a copy in our remote cache, download from source:
+    remote_path = f"{BASE_URL.removesuffix('/')}/{path}"
+    print(f"Downloading {remote_path}")
+    with (
+        smart_open.open(remote_path, "rb") as remote_file,
+        open(local_path, "wb") as local_file,
+    ):
+        shutil.copyfileobj(remote_file, local_file)
+
+    # Upload to the remote cache:
+    if remote_cache_path:
+        print(f"Uploading to remote cache: {remote_cache_path}")
+        with (
+            open(local_path, "rb") as local_file,
+            smart_open.open(remote_cache_path, "wb") as remote_cache_file,
+        ):
+            shutil.copyfileobj(local_file, remote_cache_file)
 
     return local_path
 

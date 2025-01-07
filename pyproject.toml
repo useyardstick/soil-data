@@ -18,6 +18,7 @@ dependencies = [
   "rasterio ~= 1.4.3",
   "requests",
   "shapely",
+  "smart-open",
 ]
 
 [tool.autoflake]
@@ -35,6 +36,7 @@ module = [
   "geopandas.*",
   "rasterio.*",
   "shapely.*",
+  "smart_open.*",
 ]
 follow_untyped_imports = true
 

@@ -1,4 +1,5 @@
 import re
+import shutil
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -18,10 +19,17 @@ FIXTURES = {
 
 
 @pytest.fixture(autouse=True)
-def cache_directory(monkeypatch):
+def local_cache(monkeypatch):
     with TemporaryDirectory() as tmpdir:
         monkeypatch.setenv("POLARIS_CACHED_RASTER_FILES_DIRECTORY", tmpdir)
         yield tmpdir
+
+
+@pytest.fixture
+def remote_cache(monkeypatch, s3):
+    bucket_name = "polaris-cache"
+    s3.create_bucket(Bucket=bucket_name)
+    monkeypatch.setenv("POLARIS_REMOTE_CACHE", f"s3://{bucket_name}")
 
 
 @pytest.fixture
@@ -73,7 +81,7 @@ def mock_polaris(requests_mock):
 def test_fetch_polaris_data_for_depth_range(mock_polaris, geometries):
     rasters = polaris.fetch_polaris_data_for_depth_range(
         geometries,
-        soil_property=polaris.SoilProperty.ORGANIC_MATTER,
+        soil_property="om",
         end_depth=100,
     )
     assert rasters.stddev
@@ -85,7 +93,7 @@ def test_fetch_polaris_data_for_depth_range(mock_polaris, geometries):
 def test_fetch_polaris_data_for_depth_range_below_ground(mock_polaris, geometries):
     rasters = polaris.fetch_polaris_data_for_depth_range(
         geometries,
-        soil_property=polaris.SoilProperty.ORGANIC_MATTER,
+        soil_property="om",
         start_depth=30,
         end_depth=100,
     )
@@ -104,7 +112,7 @@ def test_fetch_polaris_data_for_depth_range_below_ground(mock_polaris, geometrie
 def test_fetch_polaris_data_for_depth_range_arbitrary_depths(mock_polaris, geometries):
     rasters = polaris.fetch_polaris_data_for_depth_range(
         geometries,
-        soil_property=polaris.SoilProperty.ORGANIC_MATTER,
+        soil_property="om",
         start_depth=10,
         end_depth=45,
     )
@@ -168,6 +176,21 @@ def test_fetch_polaris_data(mock_polaris, geometries):
     assert northest == 0
     assert eastest == pytest.approx(width, abs=1)
     assert southest == pytest.approx(height, abs=1)
+
+
+def test_fetch_polaris_data_with_remote_cache(
+    mock_polaris, geometries, local_cache, remote_cache
+):
+    for _ in range(2):
+        polaris.fetch_polaris_data(
+            geometries,
+            soil_property=polaris.SoilProperty.ORGANIC_MATTER,
+            statistic=polaris.Statistic.MEAN,
+            depth=polaris.Depth.ZERO_TO_FIVE_CM,
+        )
+        shutil.rmtree(local_cache)  # clear local cache
+
+    assert all(request.call_count == 1 for request in mock_polaris)
 
 
 def test_select_depths_for_polaris():
