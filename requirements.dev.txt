@@ -8,7 +8,7 @@ pydoc-markdown ~= 4.8.2
 pytest ~= 8.3.4
 pytest-dotenv ~= 0.5.2
 requests-mock ~= 1.12.1
-responses ~= 0.25.3
+responses == 0.25.3
 smart-open[s3] ~= 7.1.0
 types-defusedxml ~= 0.7.0.20240218
 types-requests == 2.31.0.6
