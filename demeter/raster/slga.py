@@ -37,9 +37,9 @@ import rasterio
 import rasterio.transform
 import rasterio.windows
 
+from demeter.raster import Raster
 from demeter.raster.utils import (
     DepthEnum,
-    Raster,
     calculate_carbon_stock_stddev,
     calculate_weighted_average_mean,
     calculate_weighted_average_stddev,

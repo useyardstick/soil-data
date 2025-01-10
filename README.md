@@ -22,6 +22,13 @@ See API documentation:
   - [Hydrography](docs.md#demeterrasterusgshydrography)
 - [NDVI from Sentinel-2 imagery](docs.md##demeterrastersentinel2ndvi)
 
+Tools in this library return [`Raster`](docs.md#demeter.raster) instances. To
+save to disk, use the `save` method:
+
+```python
+raster.save("path/to/file.tif")
+```
+
 Development
 -----------
 

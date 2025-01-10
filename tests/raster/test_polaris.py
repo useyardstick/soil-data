@@ -156,7 +156,7 @@ def test_fetch_polaris_data_for_depth_range_median_and_mode(mock_polaris, geomet
 
 
 def test_fetch_polaris_data(mock_polaris, geometries):
-    raster, transform, *_ = polaris.fetch_polaris_data(
+    raster = polaris.fetch_polaris_data(
         geometries,
         soil_property=polaris.SoilProperty.ORGANIC_MATTER,
         statistic=polaris.Statistic.MEAN,
@@ -167,10 +167,10 @@ def test_fetch_polaris_data(mock_polaris, geometries):
     height, width = raster.shape
     longitude_min, latitude_min, longitude_max, latitude_max = geometries.total_bounds
     northest, westest = rasterio.transform.rowcol(
-        transform, longitude_min, latitude_max
+        raster.transform, longitude_min, latitude_max
     )
     southest, eastest = rasterio.transform.rowcol(
-        transform, longitude_max, latitude_min
+        raster.transform, longitude_max, latitude_min
     )
     assert westest == 0
     assert northest == 0

@@ -51,7 +51,7 @@ def test_estimate_carbon_stock(mock_slga, geometries):
         end_depth=30,
     )
     assert rasters.stddev
-    assert rasters.mean.pixels.shape == rasters.stddev.pixels.shape == (8, 23)
+    assert rasters.mean.shape == rasters.stddev.shape == (8, 23)
     assert rasters.mean.transform == rasters.stddev.transform
     assert rasters.mean.crs == "EPSG:4326"
     assert round(rasters.mean.pixels.mean(), 3) == 1.843
@@ -65,7 +65,7 @@ def test_fetch_slga_data_for_depth_range(mock_slga, geometries):
         end_depth=30,
     )
     assert rasters.stddev
-    assert rasters.mean.pixels.shape == rasters.stddev.pixels.shape == (8, 23)
+    assert rasters.mean.shape == rasters.stddev.shape == (8, 23)
     assert rasters.mean.transform == rasters.stddev.transform
     assert rasters.mean.crs == "EPSG:4326"
     assert round(rasters.mean.pixels.mean(), 3) == 6.212

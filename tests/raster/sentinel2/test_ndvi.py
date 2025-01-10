@@ -150,16 +150,17 @@ def test_fetch_and_build_ndvi_rasters(
     assert raster.crs == "EPSG:32614"
     assert raster.mean
 
-    pixels, transform, crs = raster.mean
-    assert pixels.shape == (1521, 319)
-    assert pixels.count() == 12287
-    assert round(pixels.mean(), 3) == 0.548
-    assert crs == "EPSG:32614"
+    assert raster.mean.shape == (1521, 319)
+    assert raster.mean.pixels.count() == 12287
+    assert round(raster.mean.pixels.mean(), 3) == 0.548
+    assert raster.mean.crs == "EPSG:32614"
 
     # Check that raster bounds are within 10m (1 pixel) of input geometry bounds:
-    height, width = pixels.shape
-    raster_bounds = rasterio.transform.array_bounds(height, width, transform)
-    input_geometry_bounds = geometries.to_crs(crs).total_bounds
+    height, width = raster.mean.shape
+    raster_bounds = rasterio.transform.array_bounds(
+        height, width, raster.mean.transform
+    )
+    input_geometry_bounds = geometries.to_crs(raster.crs).total_bounds
     assert all(abs(input_geometry_bounds - raster_bounds) < 10)
 
 

@@ -39,6 +39,7 @@ import numpy
 import rasterio
 from pyproj import CRS
 
+from demeter.raster import Raster
 from demeter.raster.sentinel2.constants import CLOUD_VALUES, Band, Resolution
 from demeter.raster.sentinel2.utils.download import download_keys, get_cache_directory
 from demeter.raster.sentinel2.utils.merge import (
@@ -55,13 +56,7 @@ from demeter.raster.sentinel2.utils.rasters import (
 )
 from demeter.raster.sentinel2.utils.search import find_safe_files
 from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
-from demeter.raster.utils import (
-    Raster,
-    check_for_overlapping_pixels,
-    mask,
-    mask_raster,
-    merge,
-)
+from demeter.raster.utils import check_for_overlapping_pixels, mask, mask_raster, merge
 
 # To avoid downloading from the real Copernicus API in tests, we use local test
 # fixtures. To download fixutres for a test, set `_SAVE_TEST_FIXTURES` to True

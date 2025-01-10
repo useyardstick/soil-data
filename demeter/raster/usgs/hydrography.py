@@ -17,13 +17,13 @@ from zipfile import ZipFile
 
 import geopandas
 
+from demeter.raster import Raster
 from demeter.raster.usgs.constants import S3_BUCKET_NAME
 from demeter.raster.usgs.utils import (
     download_from_s3,
     merge_and_crop_rasters,
     s3_client,
 )
-from demeter.raster.utils import Raster
 
 # USGS rasters are organized by 4-digit Hydrologic Unit (HU4). To know which
 # rasters to download, we need to identify which HU4 regions the input geometry

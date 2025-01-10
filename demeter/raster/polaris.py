@@ -38,9 +38,9 @@ import numpy
 import smart_open
 
 from demeter.constants import OM_TO_SOC
+from demeter.raster import Raster
 from demeter.raster.utils import (
     DepthEnum,
-    Raster,
     bounds_snapped_to_grid,
     calculate_carbon_stock_stddev,
     calculate_weighted_average_mean,

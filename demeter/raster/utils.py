@@ -3,7 +3,7 @@ import warnings
 from collections.abc import Iterable, Sequence
 from contextlib import ExitStack, nullcontext
 from enum import Enum
-from typing import NamedTuple, TypeVar, Union
+from typing import TypeVar, Union
 
 import geopandas
 import numpy
@@ -11,71 +11,8 @@ import pandas
 import rasterio
 import rasterio.mask
 import rasterio.merge
-import rasterio.transform
 
-
-# TODO: consider using a dataclass instead of NamedTuple so we can use
-# __post_init__ for runtime type-checking
-class Raster(NamedTuple):
-    """
-    Rasterio has a file-centric API. It has the concept of a MemoryFile for
-    in-memory processing, but it's a bit clunky. This is intended as a simpler
-    in-memory representation of raster data.
-    """
-
-    pixels: numpy.ma.MaskedArray
-    transform: rasterio.Affine
-    crs: str
-
-    @classmethod
-    def from_file(cls, path: str) -> "Raster":
-        with rasterio.open(path) as dataset:
-            transform = dataset.transform
-            crs = dataset.crs
-            assert crs
-            pixels = dataset.read(1, masked=True)
-            assert pixels.ndim == 2
-
-        return cls(pixels, transform, str(crs))
-
-    @property
-    def shape(self) -> tuple[int, int]:
-        return self.pixels.shape
-
-    @property
-    def dtype(self):
-        return self.pixels.dtype
-
-    @property
-    def nodata(self):
-        fill_value = self.pixels.fill_value
-        if fill_value == numpy.ma.default_fill_value(self.dtype):
-            return None
-
-        return fill_value
-
-    def value_at(self, x: float, y: float):
-        """
-        Find the pixel corresponding to the given coordinates, and return its value.
-        """
-        row, col = rasterio.transform.rowcol(self.transform, x, y)
-        return self.pixels[int(row), int(col)]
-
-    def save(self, path: str, masked: bool = True, **kwargs):
-        height, width = self.pixels.shape
-        with rasterio.open(
-            path,
-            mode="w",
-            width=width,
-            height=height,
-            count=1,
-            crs=self.crs,
-            dtype=self.dtype,
-            nodata=self.nodata,
-            transform=self.transform,
-            **kwargs,
-        ) as dataset:
-            dataset.write(self.pixels, 1, masked=masked)
+from demeter.raster import Raster
 
 
 def mask(dataset, shapes, **kwargs) -> Raster:
@@ -83,14 +20,10 @@ def mask(dataset, shapes, **kwargs) -> Raster:
     Wraps rasterio.mask.mask to return a Raster instance instead of a
     (raster, transform) 2-tuple.
     """
-    assert len(dataset.shape) == 2
-
     crs = dataset.crs
     assert crs
 
-    pixels, transform = rasterio.mask.mask(
-        dataset, shapes, filled=False, indexes=1, **kwargs
-    )
+    pixels, transform = rasterio.mask.mask(dataset, shapes, filled=False, **kwargs)
     return Raster(pixels, transform, str(crs))
 
 
@@ -129,7 +62,7 @@ def merge(sources: Sequence, **kwargs) -> Raster:
         raise ValueError("Rasters have no CRS")
 
     pixels, transform = rasterio.merge.merge(sources, masked=True, **kwargs)
-    return Raster(pixels.squeeze(), transform, str(crs))
+    return Raster(pixels, transform, str(crs))
 
 
 def merge_rasters(rasters: Iterable[Raster], **kwargs) -> Raster:
@@ -152,15 +85,15 @@ def raster_as_dataset(raster: Raster) -> rasterio.io.DatasetReader:
     height, width = raster.shape
     with memory_file.open(
         driver="GTiff",
-        count=1,
+        count=raster.count,
         height=height,
         width=width,
         dtype=raster.dtype,
         transform=raster.transform,
         crs=raster.crs,
-        nodata=raster.nodata,
+        nodata=raster.pixels.fill_value,
     ) as dataset:
-        dataset.write(raster.pixels, 1, masked=True)
+        dataset.write(raster.pixels)
 
     # Open a second time for reading:
     dataset = memory_file.open()

@@ -8,10 +8,17 @@ import rasterio.transform
 @dataclass
 class Raster:
     """
-    Rasterio has a file-centric API. It has the concept of a MemoryFile for
+    Rasterio has a file-centric API. It has the concept of a `MemoryFile` for
     in-memory processing, but it's a bit clunky. This is intended as a simpler
     in-memory representation of raster data, with direct access to the raster
     pixels as a numpy masked array.
+
+    Tools in this library return `Raster` instances. To save to disk, use the
+    `save` method:
+
+    ```python
+    raster.save("path/to/file.tif")
+    ```
     """
 
     pixels: numpy.ma.MaskedArray

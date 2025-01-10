@@ -44,6 +44,7 @@ follow_untyped_imports = true
 type = "python"
 search_path = ["."]
 modules = [
+  "demeter.raster",
   "demeter.raster.polaris",
   "demeter.raster.slga",
   "demeter.raster.usgs.topography",

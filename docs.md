@@ -1,3 +1,145 @@
+<a id="demeter.raster"></a>
+
+# demeter.raster
+
+<a id="demeter.raster.Raster"></a>
+
+## Raster Objects
+
+```python
+@dataclass
+class Raster()
+```
+
+Rasterio has a file-centric API. It has the concept of a MemoryFile for
+in-memory processing, but it's a bit clunky. This is intended as a simpler
+in-memory representation of raster data, with direct access to the raster
+pixels as a numpy masked array.
+
+<a id="demeter.raster.Raster.pixels"></a>
+
+#### pixels
+
+A 3-dimensional array: one 2D array per band.
+
+<a id="demeter.raster.Raster.transform"></a>
+
+#### transform
+
+The transform from pixel coordinates to geographic coordinates in this
+raster's CRS.
+
+<a id="demeter.raster.Raster.crs"></a>
+
+#### crs
+
+This raster's CRS, as a string. For example: "EPSG:5070".
+
+<a id="demeter.raster.Raster.from_file"></a>
+
+#### from\_file
+
+```python
+@classmethod
+def from_file(cls, path: str) -> "Raster"
+```
+
+Read the file at the given path into memory and return a Raster
+instance.
+
+<a id="demeter.raster.Raster.count"></a>
+
+#### count
+
+```python
+@property
+def count() -> int
+```
+
+Number of bands.
+
+<a id="demeter.raster.Raster.shape"></a>
+
+#### shape
+
+```python
+@property
+def shape() -> tuple[int, int]
+```
+
+Height and width of the raster.
+
+<a id="demeter.raster.Raster.dtype"></a>
+
+#### dtype
+
+```python
+@property
+def dtype()
+```
+
+The raster's data type.
+
+<a id="demeter.raster.Raster.value_at"></a>
+
+#### value\_at
+
+```python
+def value_at(x: float, y: float)
+```
+
+Find the pixel corresponding to the given coordinates, and return its
+value. Assumes a single-band raster.
+
+<a id="demeter.raster.Raster.values_at"></a>
+
+#### values\_at
+
+```python
+def values_at(x: float, y: float) -> list
+```
+
+Find all pixels at the given coordinates from all bands, and return
+them as a list.
+
+<a id="demeter.raster.Raster.save"></a>
+
+#### save
+
+```python
+def save(path: str, **kwargs)
+```
+
+Save the raster to the given path.
+
+<a id="demeter.raster.Raster.__post_init__"></a>
+
+#### \_\_post\_init\_\_
+
+```python
+def __post_init__()
+```
+
+Runtime validation to ensure:
+
+- All attributes are set, in case mypy doesn't catch a missing value.
+- The `pixels` array is a 3-dimensional masked array.
+
+<a id="demeter.raster.Raster.__iter__"></a>
+
+#### \_\_iter\_\_
+
+```python
+def __iter__()
+```
+
+Raster used to be a NamedTuple. This provides backward-compatibility
+for unpacking, as in:
+
+```
+pixels, transform, crs = raster
+```
+
 <a id="demeter.raster.polaris"></a>
 
 # demeter.raster.polaris

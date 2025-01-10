@@ -3,7 +3,8 @@ import numpy
 import pytest
 import rasterio
 
-from demeter.raster.utils import Raster, mask_raster, merge
+from demeter.raster import Raster
+from demeter.raster.utils import mask_raster, merge
 
 
 def test_mask_raster():
@@ -114,7 +115,7 @@ def test_merge_int_rasters_with_nonzero_nodata(int_rasters_with_nonzero_nodata):
     """
     merged = merge(int_rasters_with_nonzero_nodata)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
-    assert merged.nodata == -9999
+    assert merged.pixels.fill_value == -9999
 
 
 def test_merge_int_rasters_with_nonzero_nodata_as_float(
@@ -126,7 +127,7 @@ def test_merge_int_rasters_with_nonzero_nodata_as_float(
     """
     merged = merge(int_rasters_with_nonzero_nodata, dtype=float)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
-    assert merged.nodata == -9999
+    assert merged.pixels.fill_value == -9999
 
 
 def test_merge_int_rasters_with_nonzero_nodata_passing_zero_nodata(
@@ -137,7 +138,7 @@ def test_merge_int_rasters_with_nonzero_nodata_passing_zero_nodata(
     """
     merged = merge(int_rasters_with_nonzero_nodata, nodata=0)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
-    assert merged.nodata == 0
+    assert merged.pixels.fill_value == 0
 
 
 def test_merge_int_rasters_with_zero_nodata(int_rasters_with_zero_nodata):
@@ -146,7 +147,7 @@ def test_merge_int_rasters_with_zero_nodata(int_rasters_with_zero_nodata):
     """
     merged = merge(int_rasters_with_zero_nodata)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
-    assert merged.nodata == 0
+    assert merged.pixels.fill_value == 0
 
 
 def test_merge_int_rasters_with_zero_nodata_passing_nonzero_nodata(
@@ -158,7 +159,7 @@ def test_merge_int_rasters_with_zero_nodata_passing_nonzero_nodata(
     """
     merged = merge(int_rasters_with_zero_nodata, nodata=-9999)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
-    assert merged.nodata == -9999
+    assert merged.pixels.fill_value == -9999
 
 
 def _save_rasters(tmp_path, arrays, nodata):
