@@ -102,9 +102,7 @@ def geometries():
     """
     Chosen to span multiple tiles.
     """
-    return geopandas.read_file(
-        "tests/raster/fixtures/fields_spanning_sentinel2_tiles.geojson"
-    )
+    return geopandas.read_file("tests/fixtures/fields_spanning_sentinel2_tiles.geojson")
 
 
 @pytest.fixture
@@ -112,7 +110,7 @@ def geometries_spanning_datatake_edge():
     """
     For testing detector footprint masking.
     """
-    return geopandas.read_file("tests/raster/fixtures/texas_west.geojson")
+    return geopandas.read_file("tests/fixtures/texas_west.geojson")
 
 
 @pytest.fixture(scope="module")

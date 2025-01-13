@@ -6,19 +6,17 @@ from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
 
 @pytest.fixture
 def fields_spanning_tile_boundary():
-    return geopandas.read_file(
-        "tests/raster/fixtures/fields_spanning_sentinel2_tiles.geojson"
-    )
+    return geopandas.read_file("tests/fixtures/fields_spanning_sentinel2_tiles.geojson")
 
 
 @pytest.fixture
 def fields_in_separate_tiles():
-    return geopandas.read_file("tests/raster/fixtures/texas.geojson")
+    return geopandas.read_file("tests/fixtures/texas.geojson")
 
 
 @pytest.fixture
 def field_with_orbit_that_crosses_tile_but_not_geometry():
-    return geopandas.read_file("tests/raster/fixtures/humboldt_park.geojson")
+    return geopandas.read_file("tests/fixtures/humboldt_park.geojson")
 
 
 def test_find_tiles_for_geometries_on_tile_boundary(fields_spanning_tile_boundary):

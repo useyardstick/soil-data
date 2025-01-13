@@ -12,7 +12,7 @@ from demeter.raster.usgs.hydrography import (
 
 @pytest.fixture
 def geometries():
-    return geopandas.read_file("tests/raster/fixtures/tango_oscar.geojson")
+    return geopandas.read_file("tests/fixtures/tango_oscar.geojson")
 
 
 def test_find_hu4_codes(geometries):

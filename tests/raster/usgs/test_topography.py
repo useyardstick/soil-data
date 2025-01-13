@@ -8,7 +8,7 @@ from demeter.raster.usgs.topography import RASTER_CRS, fetch_and_merge_rasters
 @pytest.fixture
 def geometries():
     # Chosen to span 2 USGS elevation tiles:
-    return geopandas.read_file("tests/raster/fixtures/permian_basin.geojson")
+    return geopandas.read_file("tests/fixtures/permian_basin.geojson")
 
 
 # TODO: save test fixtures
