@@ -334,8 +334,29 @@ https://www.usgs.gov/national-hydrography/access-national-hydrography-products
 
 
 ```python
-raster, transform, crs = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.geojson")
+catchments = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.geojson")
+pixels, transform, crs = catchments.raster
+
+# USGS hydrography zip archives include a DBF file with pixel counts, which we
+# parse and return as a dict:
+pixel_counts = catchments.counts
+catchment_areas_in_m2 = {
+    catchment_id: pixel_count * 100
+    for catchment_id, pixel_count in pixel_counts.items()
+}
 ```
+
+<a id="demeter.raster.usgs.hydrography.USGSHydrographyRaster"></a>
+
+## USGSHydrographyRaster Objects
+
+```python
+@dataclass
+class USGSHydrographyRaster()
+```
+
+A `Raster` instance containing the USGS hydrography raster, and a dict
+mapping of pixel counts from the sidecar DBF file.
 
 <a id="demeter.raster.usgs.hydrography.fetch_and_merge_rasters"></a>
 
@@ -345,7 +366,7 @@ raster, transform, crs = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.
 def fetch_and_merge_rasters(raster_filename: str,
                             geometries: Union[str, geopandas.GeoDataFrame,
                                               geopandas.GeoSeries],
-                            crop: bool = True) -> Raster
+                            crop: bool = True) -> USGSHydrographyRaster
 ```
 
 Fetch the given raster (e.g. "cat.tif") from USGS for the given geometries.
@@ -361,14 +382,12 @@ geometries.
 
 ```python
 def fetch_rasters(
-    raster_filename: str, geometries: Union[str, geopandas.GeoDataFrame,
-                                            geopandas.GeoSeries]
+    geometries: Union[str, geopandas.GeoDataFrame, geopandas.GeoSeries]
 ) -> Iterable[str]
 ```
 
-Fetch all the rasters with the given filename (e.g. "cat.tif") that
-intersect with the given geometries. Yield the path to each downloaded
-raster.
+Fetch all the raster archives that intersect with the given geometries.
+Yield the local path to each downloaded zip archive.
 
 <a id="demeter.raster.usgs.hydrography.find_hu4_codes"></a>
 

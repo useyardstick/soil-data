@@ -10,6 +10,7 @@ requires-python = ">=3.9"
 dependencies = [
   "boto3",
   "botocore",
+  "dbfread",
   "defusedxml",
   "geopandas ~= 1.0.1",
   "numpy",
@@ -33,6 +34,7 @@ env_files = [".env.test"]
 
 [[tool.mypy.overrides]]
 module = [
+  "dbfread.*",
   "geopandas.*",
   "rasterio.*",
   "shapely.*",
