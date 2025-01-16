@@ -56,7 +56,7 @@ from demeter.raster.sentinel2.utils.rasters import (
 )
 from demeter.raster.sentinel2.utils.search import find_safe_files
 from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
-from demeter.raster.utils.mask import mask, mask_raster
+from demeter.raster.utils.mask import mask
 from demeter.raster.utils.merge import check_for_overlapping_pixels, merge
 
 # To avoid downloading from the real Copernicus API in tests, we use local test
@@ -379,7 +379,7 @@ def merge_and_crop_rasters(
         return merge(raster_paths, **merge_options)
 
     merged = merge(raster_paths, bounds=tuple(crop_to.total_bounds), **merge_options)
-    return mask_raster(merged, crop_to, all_touched=True)
+    return mask(merged, crop_to, all_touched=True)
 
 
 def extract_surface_reflectance(pixels: numpy.ndarray) -> numpy.ma.MaskedArray:

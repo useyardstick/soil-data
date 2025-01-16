@@ -39,7 +39,7 @@ import rasterio.windows
 
 from demeter.raster import Raster
 from demeter.raster.depth_enum import DepthEnum
-from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.mask import mask
 from demeter.utils import (
     calculate_carbon_stock_stddev,
     calculate_weighted_average_mean,
@@ -205,7 +205,7 @@ def fetch_slga_data_for_depth_range(
     weighted_average_mean = calculate_weighted_average_mean(mean_rasters, weights)
 
     # Crop to geometries:
-    cropped_mean_raster = mask_raster(
+    cropped_mean_raster = mask(
         Raster(weighted_average_mean, transform, "EPSG:4326"),
         geometries,
         crop=True,
@@ -223,7 +223,7 @@ def fetch_slga_data_for_depth_range(
     )
 
     # Crop to geometries:
-    cropped_stddev_raster = mask_raster(
+    cropped_stddev_raster = mask(
         Raster(weighted_average_stddev, transform, "EPSG:4326"),
         geometries,
         crop=True,

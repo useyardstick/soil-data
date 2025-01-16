@@ -1,6 +1,6 @@
 import os
 import warnings
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from contextlib import ExitStack, nullcontext
 
 import rasterio
@@ -9,12 +9,20 @@ import rasterio.merge
 from demeter.raster import Raster
 
 
-# TODO: combine these
-def merge(sources: Sequence, **kwargs) -> Raster:
+def merge(rasters: Sequence, **kwargs) -> Raster:
     """
-    Wraps `rasterio.merge.merge` to return a Raster instance instead of a
-    (raster, transform) 2-tuple.
+    Wraps `rasterio.merge.merge` to operate on Raster instances as well as
+    rasterio datasets.
     """
+    if isinstance(rasters[0], Raster):
+        with ExitStack() as stack:
+            datasets = [stack.enter_context(raster.as_dataset()) for raster in rasters]
+            return _merge(datasets, **kwargs)
+
+    return _merge(rasters, **kwargs)
+
+
+def _merge(sources: Sequence, **kwargs) -> Raster:
     # Get the CRS from the first raster. If any of the other rasters have a
     # different CRS, the call to `rasterio.merge.merge` below will raise an
     # exception, so we can safely assume this is the CRS to use for the output
@@ -34,18 +42,6 @@ def merge(sources: Sequence, **kwargs) -> Raster:
 
     pixels, transform = rasterio.merge.merge(sources, masked=True, **kwargs)
     return Raster(pixels, transform, str(crs))
-
-
-def merge_rasters(rasters: Iterable[Raster], **kwargs) -> Raster:
-    """
-    Wraps `rasterio.merge.merge` to operate on in-memory rasters instead of
-    rasterio datasets.
-    """
-    with ExitStack() as stack:
-        datasets = [stack.enter_context(raster.as_dataset()) for raster in rasters]
-        merged = merge(datasets, **kwargs)
-
-    return merged
 
 
 class OverlappingPixelsWarning(Warning):

@@ -40,7 +40,7 @@ import smart_open
 from demeter.constants import OM_TO_SOC
 from demeter.raster import Raster
 from demeter.raster.depth_enum import DepthEnum
-from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.mask import mask
 from demeter.raster.utils.merge import merge
 from demeter.utils import (
     bounds_snapped_to_grid,
@@ -263,7 +263,7 @@ def fetch_polaris_data_for_depth_range(
     weighted_average_mean = calculate_weighted_average_mean(mean_rasters, weights)
 
     # Crop to geometries:
-    cropped_mean_raster = mask_raster(
+    cropped_mean_raster = mask(
         Raster(weighted_average_mean, transform, "EPSG:4326"),
         geometries,
         all_touched=True,
@@ -279,7 +279,7 @@ def fetch_polaris_data_for_depth_range(
             weighted_average_statistic = calculate_weighted_average_mean(
                 statistic_rasters, weights
             )
-            cropped_statistic_raster = mask_raster(
+            cropped_statistic_raster = mask(
                 Raster(weighted_average_statistic, transform, "EPSG:4326"),
                 geometries,
                 all_touched=True,
@@ -303,7 +303,7 @@ def fetch_polaris_data_for_depth_range(
     )
 
     # Crop to geometries:
-    cropped_stddev_raster = mask_raster(
+    cropped_stddev_raster = mask(
         Raster(weighted_average_stddev, transform, "EPSG:4326"),
         geometries,
         all_touched=True,
@@ -347,7 +347,7 @@ def fetch_polaris_data(
     ]
     bounds = tuple(geometries.total_bounds.tolist())
     raster = merge(raster_paths, bounds=bounds, target_aligned_pixels=True)
-    return mask_raster(raster, geometries, all_touched=True)
+    return mask(raster, geometries, all_touched=True)
 
 
 def _polaris_tiles_for_geometries(

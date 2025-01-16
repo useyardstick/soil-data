@@ -3,7 +3,7 @@ import numpy
 from rasterio import Affine
 
 from demeter.raster import Raster
-from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.mask import mask
 
 
 def test_mask_raster():
@@ -44,7 +44,7 @@ def test_mask_raster():
             },
         ]
     )
-    result, *_ = mask_raster(
+    result, *_ = mask(
         Raster(matrix, transform=Affine.identity(), crs="EPSG:4326"),
         shapes=shapes,
     )

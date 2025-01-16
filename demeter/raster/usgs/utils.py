@@ -6,7 +6,7 @@ from botocore.client import Config
 
 from demeter.raster import Raster
 from demeter.raster.usgs.constants import CACHED_RASTER_FILES_DIRECTORY, S3_BUCKET_NAME
-from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.mask import mask
 from demeter.raster.utils.merge import check_for_overlapping_pixels, merge
 
 # Bucket is public, don't send credentials:
@@ -31,7 +31,7 @@ def merge_and_crop_rasters(sources, crop_to=None) -> Raster:
         return _merge_rasters(sources)
 
     merged = _merge_rasters(sources, bounds=tuple(crop_to.total_bounds))
-    return mask_raster(merged, crop_to, all_touched=True)
+    return mask(merged, crop_to, all_touched=True)
 
 
 def _merge_rasters(sources, **kwargs) -> Raster:
