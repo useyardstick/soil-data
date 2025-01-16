@@ -582,3 +582,98 @@ def extract_surface_reflectance(pixels: numpy.ndarray) -> numpy.ma.MaskedArray
 Sentinel-2 surface reflectance values are given in the 1-10000 range, with
 0 as the nodata value. Scale reflectance to the 0-1 range, and add a nodata
 mask.
+
+<a id="demeter.raster.utils.mask"></a>
+
+# demeter.raster.utils.mask
+
+<a id="demeter.raster.utils.mask.mask"></a>
+
+#### mask
+
+```python
+def mask(raster, shapes, **kwargs) -> Raster
+```
+
+Wraps `rasterio.mask.mask`, with the following differences:
+
+- Can accept a `Raster` instance as well as a rasterio dataset.
+- Returns a `Raster` instance instead of a (raster, transform) 2-tuple.
+
+<a id="demeter.raster.utils.merge"></a>
+
+# demeter.raster.utils.merge
+
+<a id="demeter.raster.utils.merge.merge"></a>
+
+#### merge
+
+```python
+def merge(rasters: Sequence, **kwargs) -> Raster
+```
+
+Wraps `rasterio.merge.merge` to operate on Raster instances as well as
+rasterio datasets.
+
+<a id="demeter.raster.utils.merge.merge_min"></a>
+
+#### merge\_min
+
+```python
+def merge_min(rasters: Sequence, **kwargs) -> Raster
+```
+
+Merge the given rasters, using the minimum value at each overlapping pixel.
+
+<a id="demeter.raster.utils.merge.merge_max"></a>
+
+#### merge\_max
+
+```python
+def merge_max(rasters: Sequence, **kwargs) -> Raster
+```
+
+Merge the given rasters, using the maxiumum value at each overlapping pixel.
+
+<a id="demeter.raster.utils.merge.merge_mean"></a>
+
+#### merge\_mean
+
+```python
+def merge_mean(rasters: Sequence, **kwargs) -> Raster
+```
+
+Merge the given rasters, using the mean value at each overlapping pixel.
+
+<a id="demeter.raster.utils.merge.merge_variance"></a>
+
+#### merge\_variance
+
+```python
+def merge_variance(rasters: Sequence, mean: Raster, **kwargs) -> Raster
+```
+
+Calculate the mean variance of rasters from the given mean.
+
+<a id="demeter.raster.utils.merge.merge_stddev"></a>
+
+#### merge\_stddev
+
+```python
+def merge_stddev(rasters: Sequence, mean: Raster, **kwargs) -> Raster
+```
+
+Calculate the mean standard deviation of rasters from the given mean.
+
+<a id="demeter.raster.utils.merge.check_for_overlapping_pixels"></a>
+
+#### check\_for\_overlapping\_pixels
+
+```python
+def check_for_overlapping_pixels(merged_data, new_data, merged_mask, new_mask,
+                                 **kwargs)
+```
+
+When passed as the `method` argument to `rasterio.merge.merge`, this
+function checks whether any two rasters have data for the same pixel.
+If they do, it logs a warning.

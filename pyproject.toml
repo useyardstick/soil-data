@@ -52,4 +52,6 @@ modules = [
   "demeter.raster.usgs.topography",
   "demeter.raster.usgs.hydrography",
   "demeter.raster.sentinel2.ndvi",
+  "demeter.raster.utils.mask",
+  "demeter.raster.utils.merge",
 ]

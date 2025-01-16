@@ -42,12 +42,6 @@ from pyproj import CRS
 from demeter.raster import Raster
 from demeter.raster.sentinel2.constants import CLOUD_VALUES, Band, Resolution
 from demeter.raster.sentinel2.utils.download import download_keys, get_cache_directory
-from demeter.raster.sentinel2.utils.merge import (
-    merge_max,
-    merge_mean,
-    merge_min,
-    merge_stddev,
-)
 from demeter.raster.sentinel2.utils.rasters import (
     DetectorFootprintMaskMetadata,
     RasterMetadata,
@@ -57,7 +51,14 @@ from demeter.raster.sentinel2.utils.rasters import (
 from demeter.raster.sentinel2.utils.search import find_safe_files
 from demeter.raster.sentinel2.utils.tiles import find_tiles_for_geometries
 from demeter.raster.utils.mask import mask
-from demeter.raster.utils.merge import check_for_overlapping_pixels, merge
+from demeter.raster.utils.merge import (
+    check_for_overlapping_pixels,
+    merge,
+    merge_max,
+    merge_mean,
+    merge_min,
+    merge_stddev,
+)
 
 # To avoid downloading from the real Copernicus API in tests, we use local test
 # fixtures. To download fixutres for a test, set `_SAVE_TEST_FIXTURES` to True

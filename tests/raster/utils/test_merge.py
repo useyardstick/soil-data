@@ -2,7 +2,14 @@ import numpy
 import pytest
 import rasterio
 
-from demeter.raster.utils.merge import merge
+from demeter.raster.utils.merge import (
+    merge,
+    merge_max,
+    merge_mean,
+    merge_min,
+    merge_stddev,
+    merge_variance,
+)
 
 
 @pytest.fixture
@@ -46,6 +53,28 @@ def int_rasters_with_nonzero_nodata(tmp_path):
             ),
         ],
         nodata=-9999,
+    )
+
+
+@pytest.fixture
+def float_rasters(tmp_path):
+    return _save_rasters(
+        tmp_path,
+        [
+            numpy.array(
+                [
+                    [4.0, 3.0],
+                    [5.0, 5.0],
+                ]
+            ),
+            numpy.array(
+                [
+                    [6.0, numpy.nan],
+                    [9.0, 4.0],
+                ]
+            ),
+        ],
+        nodata=numpy.nan,
     )
 
 
@@ -102,6 +131,73 @@ def test_merge_int_rasters_with_zero_nodata_passing_nonzero_nodata(
     merged = merge(int_rasters_with_zero_nodata, nodata=-9999)
     assert numpy.ma.allequal(merged.pixels, numpy.ma.masked_array([[6, 3], [9, 4]]))
     assert merged.pixels.fill_value == -9999
+
+
+def test_merge_min(float_rasters):
+    min_raster, _, _ = merge_min(float_rasters)
+    assert (
+        min_raster
+        == numpy.array(
+            [
+                [4.0, 3.0],
+                [5.0, 4.0],
+            ]
+        )
+    ).all()
+
+
+def test_merge_max(float_rasters):
+    max_raster, _, _ = merge_max(float_rasters)
+    assert (
+        max_raster
+        == numpy.array(
+            [
+                [6.0, 3.0],
+                [9.0, 5.0],
+            ]
+        )
+    ).all()
+
+
+def test_merge_mean(float_rasters):
+    mean_raster, _, _ = merge_mean(float_rasters)
+    assert (
+        mean_raster
+        == numpy.array(
+            [
+                [5.0, 3.0],
+                [7.0, 4.5],
+            ]
+        )
+    ).all()
+
+
+def test_merge_variance(float_rasters):
+    mean = merge_mean(float_rasters)
+    variance_raster, _, _ = merge_variance(float_rasters, mean)
+    assert (
+        variance_raster
+        == numpy.array(
+            [
+                [1.0, 0.0],
+                [4.0, 0.25],
+            ]
+        )
+    ).all()
+
+
+def test_merge_stddev(float_rasters):
+    mean = merge_mean(float_rasters)
+    stddev_raster, _, _ = merge_stddev(float_rasters, mean)
+    assert (
+        stddev_raster
+        == numpy.array(
+            [
+                [1.0, 0.0],
+                [2.0, 0.5],
+            ]
+        )
+    ).all()
 
 
 def _save_rasters(tmp_path, arrays, nodata):
