@@ -13,7 +13,7 @@ pip install git+https://github.com/useyardstick/demeter.git
 Usage
 -----
 
-See API documentation:
+### Fetching raster datasets
 
 - [POLARIS](docs.md#demeter.raster.polaris)
 - [Soil and Landscape Grid of Australia (SLGA)](docs.md#demeter.raster.slga)
@@ -28,6 +28,13 @@ instances. To save to disk, use the `save` method:
 ```python
 raster.save("path/to/file.tif")
 ```
+
+#### Raster helpers
+
+This library also provides helper functions for common raster operations:
+
+- [Masking](docs.md#demeter.raster.utils.mask)
+- [Merging](docs.md#demeter.raster.utils.merge)
 
 Development
 -----------
