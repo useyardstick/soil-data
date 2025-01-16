@@ -43,6 +43,7 @@ def test_reproject_and_merge():
         ndvi_rasters,
         crs="EPSG:4326",
         resampling_method="average",
+        merge_method="mean",
     )
     assert reprojected.crs == "EPSG:4326"
 
@@ -62,6 +63,7 @@ def test_align_and_merge():
         ndvi_rasters,
         to=flow_direction,
         resampling_method="average",
+        merge_method="mean",
     )
     assert reprojected.crs == flow_direction.crs
 

@@ -9,7 +9,7 @@ import rasterio
 import rasterio.warp
 
 from demeter.raster import Raster, extract_resolution_from_transform
-from demeter.raster.utils.merge import merge
+from demeter.raster.utils.merge import MergeMethod, merge
 
 ResamplingMethod = Literal[
     "nearest",
@@ -124,11 +124,24 @@ def reproject_and_merge(
     rasters: Iterable[Union[str, Raster]],
     crs: str,
     resampling_method: ResamplingMethod,
+    merge_method: MergeMethod = "first",
     align_to_transform: Optional[rasterio.Affine] = None,
     **kwargs,
 ) -> Raster:
     """
     Reproject multiple rasters to a common CRS, then merge them.
+
+    The `merge_method` argument specifies how to handle overlapping
+    pixels. Other arguments are passed to `merge`. Example:
+
+    ```python
+    merged = reproject_and_merge(
+        rasters,
+        crs="EPSG:4326",
+        resampling_method="average",  # how to resample when reprojecting
+        merge_method="mean",          # how to merge overlapping pixels
+    )
+    ```
     """
     with ExitStack() as stack:
         paths_to_merge = []
@@ -143,10 +156,10 @@ def reproject_and_merge(
         if not paths_to_merge:
             raise ValueError("No rasters to merge")
 
-        # TODO: document merge strategies
         return merge(
             paths_to_merge,
             resampling=rasterio.enums.Resampling[resampling_method],
+            method=merge_method,
             **kwargs,
         )
 
@@ -155,13 +168,18 @@ def align_and_merge(
     rasters: Iterable[Union[str, Raster]],
     to: Union[str, Raster],
     resampling_method: ResamplingMethod,
+    merge_method: MergeMethod = "first",
     **kwargs,
 ) -> Raster:
     """
     Align multiple rasters to the given raster's grid, then merge them.
+
+    Keyword arguments are passed to `merge`.
     """
     transform, crs = _extract_transform_and_crs(to)
-    return reproject_and_merge(rasters, crs, resampling_method, transform, **kwargs)
+    return reproject_and_merge(
+        rasters, crs, resampling_method, merge_method, transform, **kwargs
+    )
 
 
 def _extract_transform_and_crs(

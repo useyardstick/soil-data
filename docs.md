@@ -696,11 +696,21 @@ Wraps `rasterio.mask.mask`, with the following differences:
 #### merge
 
 ```python
-def merge(rasters: Sequence, **kwargs) -> Raster
+def merge(rasters: Sequence,
+          *,
+          method: MergeMethod = "first",
+          **kwargs) -> Raster
 ```
 
 Wraps `rasterio.merge.merge` to operate on Raster instances as well as
 rasterio datasets.
+
+The `method` argument specifies how to handle overlapping pixels. See
+https://rasterio.readthedocs.io/en/stable/api/rasterio.merge.html for
+details on the available methods.
+
+In addition to rasterio's built-in methods listed above, this also supports
+a `mean` method that returns the mean of all valid overlapping pixels.
 
 <a id="demeter.raster.utils.merge.merge_min"></a>
 
