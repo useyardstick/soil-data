@@ -112,6 +112,16 @@ def save(path: str, **kwargs)
 
 Save the raster to the given path.
 
+<a id="demeter.raster.Raster.as_dataset"></a>
+
+#### as\_dataset
+
+```python
+def as_dataset() -> rasterio.io.DatasetReader
+```
+
+Write this raster to a `MemoryFile`, then open it for reading.
+
 <a id="demeter.raster.Raster.__post_init__"></a>
 
 #### \_\_post\_init\_\_

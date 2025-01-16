@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 import numpy
 import rasterio
@@ -90,16 +91,42 @@ class Raster:
         with rasterio.open(
             path,
             mode="w",
-            width=width,
-            height=height,
-            count=self.count,
-            crs=self.crs,
-            dtype=self.dtype,
-            nodata=self.pixels.fill_value,
-            transform=self.transform,
+            **self._rasterio_profile(),
             **kwargs,
         ) as dataset:
             dataset.write(self.pixels)
+
+    # TODO: add tempfile implementation
+    def as_dataset(self) -> rasterio.io.DatasetReader:
+        """
+        Write this raster to a `MemoryFile`, then open it for reading.
+        """
+        memory_file = rasterio.io.MemoryFile()
+
+        height, width = self.shape
+        with memory_file.open(driver="GTiff", **self._rasterio_profile()) as dataset:
+            dataset.write(self.pixels)
+
+        # Open a second time for reading:
+        dataset = memory_file.open()
+
+        # To ensure the memory file is closed when the dataset is closed, add it to
+        # the dataset's exit stack. This is similar to what rasterio does here:
+        # https://github.com/rasterio/rasterio/blob/1.4.3/rasterio/__init__.py#L301
+        dataset._env.enter_context(memory_file)
+        return dataset
+
+    def _rasterio_profile(self) -> dict[str, Any]:
+        height, width = self.shape
+        return {
+            "width": width,
+            "height": height,
+            "count": self.count,
+            "crs": self.crs,
+            "dtype": self.dtype,
+            "nodata": self.pixels.fill_value,
+            "transform": self.transform,
+        }
 
     def __post_init__(self):
         """

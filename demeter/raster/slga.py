@@ -38,12 +38,12 @@ import rasterio.transform
 import rasterio.windows
 
 from demeter.raster import Raster
-from demeter.raster.utils import (
-    DepthEnum,
+from demeter.raster.depth_enum import DepthEnum
+from demeter.raster.utils.mask import mask_raster
+from demeter.utils import (
     calculate_carbon_stock_stddev,
     calculate_weighted_average_mean,
     calculate_weighted_average_stddev,
-    mask_raster,
 )
 
 BASE_URL = "https://apikey:{tern_api_key}@data.tern.org.au/landscapes/slga/NationalMaps/SoilAndLandscapeGrid/"

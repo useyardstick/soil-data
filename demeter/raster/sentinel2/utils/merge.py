@@ -4,7 +4,7 @@ import numpy
 from rasterio.merge import copy_count, copy_sum
 
 from demeter.raster import Raster
-from demeter.raster.utils import merge
+from demeter.raster.utils.merge import merge
 
 
 def merge_min(rasters: Sequence[str]) -> Raster:

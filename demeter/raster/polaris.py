@@ -39,14 +39,14 @@ import smart_open
 
 from demeter.constants import OM_TO_SOC
 from demeter.raster import Raster
-from demeter.raster.utils import (
-    DepthEnum,
+from demeter.raster.depth_enum import DepthEnum
+from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.merge import merge
+from demeter.utils import (
     bounds_snapped_to_grid,
     calculate_carbon_stock_stddev,
     calculate_weighted_average_mean,
     calculate_weighted_average_stddev,
-    mask_raster,
-    merge,
 )
 
 BASE_URL = os.environ.get(

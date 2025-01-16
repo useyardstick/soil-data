@@ -13,7 +13,7 @@ from demeter.raster.sentinel2.constants import (
     SWATH_WIDTH_KM,
     TILES_CONUS_PATH,
 )
-from demeter.raster.utils import bounds_snapped_to_grid
+from demeter.utils import bounds_snapped_to_grid
 
 
 class TileMetadata(NamedTuple):

@@ -6,7 +6,8 @@ from botocore.client import Config
 
 from demeter.raster import Raster
 from demeter.raster.usgs.constants import CACHED_RASTER_FILES_DIRECTORY, S3_BUCKET_NAME
-from demeter.raster.utils import check_for_overlapping_pixels, mask_raster, merge
+from demeter.raster.utils.mask import mask_raster
+from demeter.raster.utils.merge import check_for_overlapping_pixels, merge
 
 # Bucket is public, don't send credentials:
 s3_client = boto3.client("s3", config=Config(signature_version=UNSIGNED))

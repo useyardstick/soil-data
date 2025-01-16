@@ -2,4 +2,6 @@ build/
 *.egg-info/
 **/__pycache__/
 
+.polaris_cache
+.sentinel2_cache
 .usgs_cache

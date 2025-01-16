@@ -16,7 +16,7 @@ import geopandas
 
 from demeter.raster import Raster
 from demeter.raster.usgs.utils import download_from_s3, merge_and_crop_rasters
-from demeter.raster.utils import bounds_snapped_to_grid
+from demeter.utils import bounds_snapped_to_grid
 
 # USGS topography rasters at 1/3 arc-second resolution are stored in S3 under:
 S3_PREFIX = "StagedProducts/Elevation/13/TIFF/current/"
