@@ -55,3 +55,8 @@ modules = [
   "demeter.raster.utils.mask",
   "demeter.raster.utils.merge",
 ]
+
+[tool.pydoc-markdown.renderer]
+type = "markdown"
+filename = "docs.md"
+render_toc = true

@@ -1,3 +1,56 @@
+# Table of Contents
+
+* [demeter.raster](#demeter.raster)
+  * [Raster](#demeter.raster.Raster)
+    * [pixels](#demeter.raster.Raster.pixels)
+    * [transform](#demeter.raster.Raster.transform)
+    * [crs](#demeter.raster.Raster.crs)
+    * [from\_file](#demeter.raster.Raster.from_file)
+    * [count](#demeter.raster.Raster.count)
+    * [shape](#demeter.raster.Raster.shape)
+    * [dtype](#demeter.raster.Raster.dtype)
+    * [value\_at](#demeter.raster.Raster.value_at)
+    * [values\_at](#demeter.raster.Raster.values_at)
+    * [save](#demeter.raster.Raster.save)
+    * [as\_dataset](#demeter.raster.Raster.as_dataset)
+    * [\_\_post\_init\_\_](#demeter.raster.Raster.__post_init__)
+    * [\_\_iter\_\_](#demeter.raster.Raster.__iter__)
+* [demeter.raster.polaris](#demeter.raster.polaris)
+  * [estimate\_carbon\_stock](#demeter.raster.polaris.estimate_carbon_stock)
+  * [fetch\_polaris\_data\_for\_depth\_range](#demeter.raster.polaris.fetch_polaris_data_for_depth_range)
+  * [fetch\_polaris\_data](#demeter.raster.polaris.fetch_polaris_data)
+* [demeter.raster.slga](#demeter.raster.slga)
+  * [estimate\_carbon\_stock](#demeter.raster.slga.estimate_carbon_stock)
+  * [fetch\_slga\_data\_for\_depth\_range](#demeter.raster.slga.fetch_slga_data_for_depth_range)
+* [demeter.raster.usgs.topography](#demeter.raster.usgs.topography)
+  * [fetch\_and\_merge\_rasters](#demeter.raster.usgs.topography.fetch_and_merge_rasters)
+  * [fetch\_rasters](#demeter.raster.usgs.topography.fetch_rasters)
+* [demeter.raster.usgs.hydrography](#demeter.raster.usgs.hydrography)
+  * [USGSHydrographyRaster](#demeter.raster.usgs.hydrography.USGSHydrographyRaster)
+  * [fetch\_and\_merge\_rasters](#demeter.raster.usgs.hydrography.fetch_and_merge_rasters)
+  * [fetch\_rasters](#demeter.raster.usgs.hydrography.fetch_rasters)
+  * [find\_hu4\_codes](#demeter.raster.usgs.hydrography.find_hu4_codes)
+  * [download\_raster\_archives](#demeter.raster.usgs.hydrography.download_raster_archives)
+  * [raster\_keys\_by\_hu4\_code](#demeter.raster.usgs.hydrography.raster_keys_by_hu4_code)
+* [demeter.raster.sentinel2.ndvi](#demeter.raster.sentinel2.ndvi)
+  * [fetch\_and\_build\_ndvi\_rasters](#demeter.raster.sentinel2.ndvi.fetch_and_build_ndvi_rasters)
+  * [fetch\_and\_build\_ndvi\_rasters\_from\_keys](#demeter.raster.sentinel2.ndvi.fetch_and_build_ndvi_rasters_from_keys)
+  * [build\_ndvi\_rasters\_for\_crs](#demeter.raster.sentinel2.ndvi.build_ndvi_rasters_for_crs)
+  * [build\_ndvi\_raster\_for\_datatake](#demeter.raster.sentinel2.ndvi.build_ndvi_raster_for_datatake)
+  * [build\_and\_save\_ndvi\_raster\_for\_datatake](#demeter.raster.sentinel2.ndvi.build_and_save_ndvi_raster_for_datatake)
+  * [merge\_and\_crop\_rasters](#demeter.raster.sentinel2.ndvi.merge_and_crop_rasters)
+  * [extract\_surface\_reflectance](#demeter.raster.sentinel2.ndvi.extract_surface_reflectance)
+* [demeter.raster.utils.mask](#demeter.raster.utils.mask)
+  * [mask](#demeter.raster.utils.mask.mask)
+* [demeter.raster.utils.merge](#demeter.raster.utils.merge)
+  * [merge](#demeter.raster.utils.merge.merge)
+  * [merge\_min](#demeter.raster.utils.merge.merge_min)
+  * [merge\_max](#demeter.raster.utils.merge.merge_max)
+  * [merge\_mean](#demeter.raster.utils.merge.merge_mean)
+  * [merge\_variance](#demeter.raster.utils.merge.merge_variance)
+  * [merge\_stddev](#demeter.raster.utils.merge.merge_stddev)
+  * [check\_for\_overlapping\_pixels](#demeter.raster.utils.merge.check_for_overlapping_pixels)
+
 <a id="demeter.raster"></a>
 
 # demeter.raster
@@ -159,7 +212,7 @@ http://hydrology.cee.duke.edu/POLARIS/PROPERTIES/v1.0/
 
 **Example**:
 
-
+  
 ```python
 polaris_om = fetch_polaris_data_for_depth_range(
     "/path/to/geometries.geojson",
@@ -237,7 +290,7 @@ Tools for fetching raster data from the Soil and Landscape Grid of Australia
 
 **Example**:
 
-
+  
 ```python
 slga_om = fetch_slga_data_for_depth_range(
     "/path/to/geometries.geojson",
@@ -298,7 +351,7 @@ https://data.usgs.gov/datacatalog/data/USGS:3a81321b-c153-416f-98b7-cc8e5f0e17c3
 
 **Example**:
 
-
+  
 ```python
 raster, transform, crs = fetch_and_merge_rasters("path/to/boundaries.geojson")
 ```
@@ -342,7 +395,7 @@ https://www.usgs.gov/national-hydrography/access-national-hydrography-products
 
 **Example**:
 
-
+  
 ```python
 catchments = fetch_and_merge_rasters("cat.tif", "path/to/boundaries.geojson")
 pixels, transform, crs = catchments.raster
@@ -441,7 +494,7 @@ to calculate Normalized Difference Vegetation Index (NDVI) rasters.
 
 **Example**:
 
-
+  
 ```python
 os.environ["COPERNICUS_AWS_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu/"
 os.environ["COPERNICUS_AWS_ACCESS_KEY_ID"] = ...
@@ -454,7 +507,7 @@ rasters = fetch_and_build_ndvi_rasters(
     statistics=["mean", "min", "max", "stddev"],
 )
 ```
-
+  
   Sentinel-2 rasters are projected using the Universal Transverse Mercator (UTM)
   system. If the input geometries span multiple UTM zones, this function will
   return a separate raster for each zone. You can use them separately, or project
@@ -677,3 +730,4 @@ def check_for_overlapping_pixels(merged_data, new_data, merged_mask, new_mask,
 When passed as the `method` argument to `rasterio.merge.merge`, this
 function checks whether any two rasters have data for the same pixel.
 If they do, it logs a warning.
+

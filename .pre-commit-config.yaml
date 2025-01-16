@@ -1,15 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-  - repo: local
-    hooks:
-      - id: docs
-        name: run `pydoc-markdown` and remove trailing whitespace
-        language: system
-        types: [python]
-        entry: >
-          sh -c "pydoc-markdown | sed 's/ *$//g' | perl -pe 'chomp if eof' > docs.md"
-        pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -45,3 +36,8 @@ repos:
     rev: 7.1.1
     hooks:
       - id: flake8
+  - repo: https://github.com/NiklasRosenstein/pydoc-markdown
+    rev: 3f20390f0c1bf3d4d26e2d9be86a60bf46ff625d
+    hooks:
+      - id: pydoc-markdown
+exclude: '^docs\.md$'
