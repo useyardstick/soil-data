@@ -1,5 +1,5 @@
 import math
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from contextlib import ExitStack
 from tempfile import NamedTemporaryFile
 from typing import Literal, Optional, Union
@@ -9,31 +9,29 @@ import rasterio
 import rasterio.warp
 
 from demeter.raster import Raster, extract_resolution_from_transform
-from demeter.raster.utils.merge import MergeMethod, merge
-
-ResamplingMethod = Literal[
-    "nearest",
-    "bilinear",
-    "cubic",
-    "cubic_spline",
-    "lanczos",
-    "average",
-    "mode",
-    "gauss",
-    "max",
-    "min",
-    "med",
-    "q1",
-    "q3",
-    "sum",
-    "rms",
-]
+from demeter.raster.utils.merge import merge
 
 
 def reproject(
     raster: Union[str, Raster],
     crs: str,
-    resampling_method: ResamplingMethod,
+    resampling_method: Literal[
+        "nearest",
+        "bilinear",
+        "cubic",
+        "cubic_spline",
+        "lanczos",
+        "average",
+        "mode",
+        "gauss",
+        "max",
+        "min",
+        "med",
+        "q1",
+        "q3",
+        "sum",
+        "rms",
+    ],
     align_to_transform: Optional[rasterio.Affine] = None,
 ) -> Raster:
     """
@@ -111,7 +109,23 @@ def reproject(
 def align(
     raster: Union[str, Raster],
     to: Union[str, Raster],
-    resampling_method: ResamplingMethod,
+    resampling_method: Literal[
+        "nearest",
+        "bilinear",
+        "cubic",
+        "cubic_spline",
+        "lanczos",
+        "average",
+        "mode",
+        "gauss",
+        "max",
+        "min",
+        "med",
+        "q1",
+        "q3",
+        "sum",
+        "rms",
+    ],
 ) -> Raster:
     """
     Align a raster to another raster's grid.
@@ -123,8 +137,26 @@ def align(
 def reproject_and_merge(
     rasters: Iterable[Union[str, Raster]],
     crs: str,
-    resampling_method: ResamplingMethod,
-    merge_method: MergeMethod = "first",
+    resampling_method: Literal[
+        "nearest",
+        "bilinear",
+        "cubic",
+        "cubic_spline",
+        "lanczos",
+        "average",
+        "mode",
+        "gauss",
+        "max",
+        "min",
+        "med",
+        "q1",
+        "q3",
+        "sum",
+        "rms",
+    ],
+    merge_method: Union[
+        Literal["first", "last", "min", "max", "sum", "count", "mean"], Callable
+    ] = "first",
     align_to_transform: Optional[rasterio.Affine] = None,
     **kwargs,
 ) -> Raster:
@@ -167,8 +199,26 @@ def reproject_and_merge(
 def align_and_merge(
     rasters: Iterable[Union[str, Raster]],
     to: Union[str, Raster],
-    resampling_method: ResamplingMethod,
-    merge_method: MergeMethod = "first",
+    resampling_method: Literal[
+        "nearest",
+        "bilinear",
+        "cubic",
+        "cubic_spline",
+        "lanczos",
+        "average",
+        "mode",
+        "gauss",
+        "max",
+        "min",
+        "med",
+        "q1",
+        "q3",
+        "sum",
+        "rms",
+    ],
+    merge_method: Union[
+        Literal["first", "last", "min", "max", "sum", "count", "mean"], Callable
+    ] = "first",
     **kwargs,
 ) -> Raster:
     """

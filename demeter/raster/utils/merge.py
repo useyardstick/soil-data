@@ -11,12 +11,15 @@ from rasterio.merge import copy_count, copy_sum
 
 from demeter.raster import Raster
 
-MergeMethod = Union[
-    Literal["first", "last", "min", "max", "sum", "count", "mean"], Callable
-]
 
-
-def merge(rasters: Sequence, *, method: MergeMethod = "first", **kwargs) -> Raster:
+def merge(
+    rasters: Sequence,
+    *,
+    method: Union[
+        Literal["first", "last", "min", "max", "sum", "count", "mean"], Callable
+    ] = "first",
+    **kwargs,
+) -> Raster:
     """
     Wraps `rasterio.merge.merge` to operate on Raster instances as well as
     rasterio datasets.

@@ -32,7 +32,7 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from itertools import groupby
 from tempfile import TemporaryDirectory
-from typing import Literal, Optional, Union
+from typing import Literal, Optional, Union, cast
 
 import geopandas
 import numpy
@@ -68,9 +68,9 @@ _FIXTURES_DIRECTORY = "tests/raster/fixtures/sentinel2/eodata/"
 _SAVE_TEST_FIXTURES = False
 
 
-StatisticType = Literal["mean", "min", "max", "stddev"]
-
-MERGE_METHODS: dict[StatisticType, Callable[[Sequence[str]], Raster]] = {
+MERGE_METHODS: dict[
+    Literal["mean", "min", "max"], Callable[[Sequence[str]], Raster]
+] = {
     "mean": merge_mean,
     "min": merge_min,
     "max": merge_max,
@@ -99,7 +99,7 @@ def fetch_and_build_ndvi_rasters(
     geometries: Union[str, geopandas.GeoDataFrame, geopandas.GeoSeries],
     year: int,
     month: int,
-    statistics: Optional[Collection[StatisticType]] = None,
+    statistics: Optional[Collection[Literal["mean", "min", "max", "stddev"]]] = None,
     crop: bool = True,
 ) -> Iterable[NDVIRasters]:
     """
@@ -146,7 +146,7 @@ def fetch_and_build_ndvi_rasters(
 
 def fetch_and_build_ndvi_rasters_from_keys(
     raster_keys: Iterable[str],
-    statistics: Optional[Collection[StatisticType]] = None,
+    statistics: Optional[Collection[Literal["mean", "min", "max", "stddev"]]] = None,
     crop_to: Optional[Union[geopandas.GeoDataFrame, geopandas.GeoSeries]] = None,
 ) -> Iterable[NDVIRasters]:
     """
@@ -184,7 +184,7 @@ def fetch_and_build_ndvi_rasters_from_keys(
 def build_ndvi_rasters_for_crs(
     crs: str,
     raster_paths: Iterable[str],
-    statistics: Optional[Collection[StatisticType]] = None,
+    statistics: Optional[Collection[Literal["mean", "min", "max", "stddev"]]] = None,
     crop_to: Optional[Union[geopandas.GeoDataFrame, geopandas.GeoSeries]] = None,
 ) -> NDVIRasters:
     """
@@ -202,6 +202,7 @@ def build_ndvi_rasters_for_crs(
 
     calculate_stddev = "stddev" in statistics
     statistics.discard("stddev")
+    statistics = cast(set[Literal["mean", "min", "max"]], statistics)
     if calculate_stddev and "mean" not in statistics:
         raise ValueError("Cannot calculate standard deviation without mean")
 
@@ -377,9 +378,9 @@ def merge_and_crop_rasters(
         "target_aligned_pixels": True,
     }
     if crop_to is None:
-        return merge(raster_paths, **merge_options)
+        return merge(raster_paths, **merge_options)  # type: ignore
 
-    merged = merge(raster_paths, bounds=tuple(crop_to.total_bounds), **merge_options)
+    merged = merge(raster_paths, bounds=tuple(crop_to.total_bounds), **merge_options)  # type: ignore
     return mask(merged, crop_to, all_touched=True)
 
 
