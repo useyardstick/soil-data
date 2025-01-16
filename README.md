@@ -16,14 +16,14 @@ Usage
 See API documentation:
 
 - [POLARIS](docs.md#demeter.raster.polaris)
-- [Soil and Landscape Grid of Australia (SLGA)](docs.md#demeterrasterslga)
+- [Soil and Landscape Grid of Australia (SLGA)](docs.md#demeter.raster.slga)
 - USGS
-  - [Topography](docs.md#demeterrasterusgstopography)
-  - [Hydrography](docs.md#demeterrasterusgshydrography)
-- [NDVI from Sentinel-2 imagery](docs.md##demeterrastersentinel2ndvi)
+  - [Topography](docs.md#demeter.raster.usgs.topography)
+  - [Hydrography](docs.md#demeter.raster.usgs.hydrography)
+- [NDVI from Sentinel-2 imagery](docs.md##demeter.raster.sentinel2.ndvi)
 
-Tools in this library return [`Raster`](docs.md#demeter.raster) instances. To
-save to disk, use the `save` method:
+Tools in this library return [`Raster`](docs.md#demeter.raster.Raster)
+instances. To save to disk, use the `save` method:
 
 ```python
 raster.save("path/to/file.tif")
