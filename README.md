@@ -35,6 +35,7 @@ This library also provides helper functions for common raster operations:
 
 - [Masking](docs.md#demeter.raster.utils.mask)
 - [Merging](docs.md#demeter.raster.utils.merge)
+- [Reprojecting](docs.md#demeter.raster.utils.reprojection)
 
 Development
 -----------
