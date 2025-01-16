@@ -1,7 +1,8 @@
 import os
 import warnings
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from contextlib import ExitStack, nullcontext
+from typing import Literal, Union
 
 import numpy
 import rasterio
@@ -11,17 +12,31 @@ from rasterio.merge import copy_count, copy_sum
 from demeter.raster import Raster
 
 
-def merge(rasters: Sequence, **kwargs) -> Raster:
+def merge(
+    rasters: Sequence,
+    *,
+    method: Union[
+        Literal["first", "last", "min", "max", "sum", "count", "mean"], Callable
+    ] = "first",
+    **kwargs,
+) -> Raster:
     """
     Wraps `rasterio.merge.merge` to operate on Raster instances as well as
     rasterio datasets.
+
+    The `method` argument specifies how to handle overlapping pixels. See
+    https://rasterio.readthedocs.io/en/stable/api/rasterio.merge.html for
+    details on the available methods.
+
+    In addition to rasterio's built-in methods listed above, this also supports
+    a `mean` method that returns the mean of all valid overlapping pixels.
     """
     if isinstance(rasters[0], Raster):
         with ExitStack() as stack:
             datasets = [stack.enter_context(raster.as_dataset()) for raster in rasters]
-            return _merge(datasets, **kwargs)
+            return _merge(datasets, method=method, **kwargs)
 
-    return _merge(rasters, **kwargs)
+    return _merge(rasters, method=method, **kwargs)
 
 
 def merge_min(rasters: Sequence, **kwargs) -> Raster:
@@ -42,16 +57,7 @@ def merge_mean(rasters: Sequence, **kwargs) -> Raster:
     """
     Merge the given rasters, using the mean value at each overlapping pixel.
     """
-    # Stack two numpy arrays, the first with the sum of valid values at each
-    # pixel, and the second with the count of valid values at each pixel. Then
-    # divide the first array by the second to get the mean.
-    raster = merge(
-        rasters,
-        method=_copy_sum_and_count,
-        output_count=2,
-        **kwargs,
-    )
-    return _mean_from_sum_and_count(raster)
+    return merge(rasters, method="mean", **kwargs)
 
 
 def merge_variance(rasters: Sequence, mean: Raster, **kwargs) -> Raster:
@@ -77,6 +83,53 @@ def merge_stddev(rasters: Sequence, mean: Raster, **kwargs) -> Raster:
         variance_raster.transform,
         variance_raster.crs,
     )
+
+
+def _merge(sources: Sequence, *, method, output_count=None, **kwargs) -> Raster:
+    # Get the CRS from the first raster. If any of the other rasters have a
+    # different CRS, the call to `rasterio.merge.merge` below will raise an
+    # exception, so we can safely assume this is the CRS to use for the output
+    # raster.
+    first_source = sources[0]
+
+    if isinstance(first_source, (str, os.PathLike)):
+        dataset_opener = rasterio.open
+    else:
+        dataset_opener = nullcontext
+
+    with dataset_opener(first_source) as dataset:
+        crs = dataset.crs
+        num_bands = dataset.count
+
+    if crs is None:
+        raise ValueError("Rasters have no CRS")
+
+    calculating_mean = method == "mean"
+    if calculating_mean:
+        if num_bands > 1:
+            raise ValueError(
+                "Calculating mean for multi-band rasters not yet supported"
+            )
+
+        # Stack two numpy arrays, the first with the sum of valid values at
+        # each pixel, and the second with the count of valid values at each
+        # pixel. Then divide the first array by the second to get the mean.
+        method = _copy_sum_and_count
+        output_count = 2
+
+    pixels, transform = rasterio.merge.merge(
+        sources,
+        masked=True,
+        method=method,
+        output_count=output_count,
+        **kwargs,
+    )
+    raster = Raster(pixels, transform, str(crs))
+
+    if calculating_mean:
+        return _mean_from_sum_and_count(raster)
+
+    return raster
 
 
 def _mean_from_sum_and_count(raster: Raster) -> Raster:
@@ -113,28 +166,6 @@ def _copy_variance_sum_and_count(mean):
         copy_count(merged_count, new_data, merged_count_mask, new_mask, **kwargs)
 
     return _copy
-
-
-def _merge(sources: Sequence, **kwargs) -> Raster:
-    # Get the CRS from the first raster. If any of the other rasters have a
-    # different CRS, the call to `rasterio.merge.merge` below will raise an
-    # exception, so we can safely assume this is the CRS to use for the output
-    # raster.
-    first_source = sources[0]
-
-    if isinstance(first_source, (str, os.PathLike)):
-        dataset_opener = rasterio.open
-    else:
-        dataset_opener = nullcontext
-
-    with dataset_opener(first_source) as dataset:
-        crs = dataset.crs
-
-    if crs is None:
-        raise ValueError("Rasters have no CRS")
-
-    pixels, transform = rasterio.merge.merge(sources, masked=True, **kwargs)
-    return Raster(pixels, transform, str(crs))
 
 
 class OverlappingPixelsWarning(Warning):

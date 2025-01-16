@@ -54,6 +54,7 @@ modules = [
   "demeter.raster.sentinel2.ndvi",
   "demeter.raster.utils.mask",
   "demeter.raster.utils.merge",
+  "demeter.raster.utils.reprojection",
 ]
 
 [tool.pydoc-markdown.renderer]

@@ -5,6 +5,8 @@ import numpy
 import rasterio
 import rasterio.transform
 
+from demeter.raster.utils.transform import extract_resolution_from_transform
+
 
 @dataclass
 class Raster:
@@ -57,6 +59,30 @@ class Raster:
         Height and width of the raster.
         """
         return self.pixels.shape[-2:]
+
+    @property
+    def bounds(self) -> tuple[float, float, float, float]:
+        """
+        The raster's bounds, in the raster's CRS.
+        """
+        height, width = self.shape
+        return rasterio.transform.array_bounds(height, width, self.transform)
+
+    @property
+    def resolution(self) -> tuple[float, float]:
+        """
+        The raster's (x, y) resolution.
+        """
+        return extract_resolution_from_transform(self.transform)
+
+    @property
+    def grid_offset(self) -> tuple[float, float]:
+        """
+        The (x, y) offset of this raster's origin point on a grid aligned with
+        its resolution.
+        """
+        xres, yres = self.resolution
+        return self.transform.xoff % xres, self.transform.yoff % yres
 
     @property
     def dtype(self):

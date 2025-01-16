@@ -8,6 +8,9 @@
     * [from\_file](#demeter.raster.Raster.from_file)
     * [count](#demeter.raster.Raster.count)
     * [shape](#demeter.raster.Raster.shape)
+    * [bounds](#demeter.raster.Raster.bounds)
+    * [resolution](#demeter.raster.Raster.resolution)
+    * [grid\_offset](#demeter.raster.Raster.grid_offset)
     * [dtype](#demeter.raster.Raster.dtype)
     * [value\_at](#demeter.raster.Raster.value_at)
     * [values\_at](#demeter.raster.Raster.values_at)
@@ -50,6 +53,11 @@
   * [merge\_variance](#demeter.raster.utils.merge.merge_variance)
   * [merge\_stddev](#demeter.raster.utils.merge.merge_stddev)
   * [check\_for\_overlapping\_pixels](#demeter.raster.utils.merge.check_for_overlapping_pixels)
+* [demeter.raster.utils.reprojection](#demeter.raster.utils.reprojection)
+  * [reproject](#demeter.raster.utils.reprojection.reproject)
+  * [align](#demeter.raster.utils.reprojection.align)
+  * [reproject\_and\_merge](#demeter.raster.utils.reprojection.reproject_and_merge)
+  * [align\_and\_merge](#demeter.raster.utils.reprojection.align_and_merge)
 
 <a id="demeter.raster"></a>
 
@@ -121,6 +129,40 @@ def shape() -> tuple[int, int]
 ```
 
 Height and width of the raster.
+
+<a id="demeter.raster.Raster.bounds"></a>
+
+#### bounds
+
+```python
+@property
+def bounds() -> tuple[float, float, float, float]
+```
+
+The raster's bounds, in the raster's CRS.
+
+<a id="demeter.raster.Raster.resolution"></a>
+
+#### resolution
+
+```python
+@property
+def resolution() -> tuple[float, float]
+```
+
+The raster's (x, y) resolution.
+
+<a id="demeter.raster.Raster.grid_offset"></a>
+
+#### grid\_offset
+
+```python
+@property
+def grid_offset() -> tuple[float, float]
+```
+
+The (x, y) offset of this raster's origin point on a grid aligned with
+its resolution.
 
 <a id="demeter.raster.Raster.dtype"></a>
 
@@ -523,8 +565,8 @@ def fetch_and_build_ndvi_rasters(geometries: Union[str, geopandas.GeoDataFrame,
                                                    geopandas.GeoSeries],
                                  year: int,
                                  month: int,
-                                 statistics: Optional[
-                                     Collection[StatisticType]] = None,
+                                 statistics: Optional[Collection[Literal[
+                                     "mean", "min", "max", "stddev"]]] = None,
                                  crop: bool = True) -> Iterable[NDVIRasters]
 ```
 
@@ -543,7 +585,8 @@ the Sentinel-2 rasters intersecting with the given geometries.
 ```python
 def fetch_and_build_ndvi_rasters_from_keys(
     raster_keys: Iterable[str],
-    statistics: Optional[Collection[StatisticType]] = None,
+    statistics: Optional[Collection[Literal["mean", "min", "max",
+                                            "stddev"]]] = None,
     crop_to: Optional[Union[geopandas.GeoDataFrame,
                             geopandas.GeoSeries]] = None
 ) -> Iterable[NDVIRasters]
@@ -563,7 +606,8 @@ needed to calculate NDVI, and SCL is used to mask out clouds.
 def build_ndvi_rasters_for_crs(
     crs: str,
     raster_paths: Iterable[str],
-    statistics: Optional[Collection[StatisticType]] = None,
+    statistics: Optional[Collection[Literal["mean", "min", "max",
+                                            "stddev"]]] = None,
     crop_to: Optional[Union[geopandas.GeoDataFrame,
                             geopandas.GeoSeries]] = None
 ) -> NDVIRasters
@@ -662,11 +706,22 @@ Wraps `rasterio.mask.mask`, with the following differences:
 #### merge
 
 ```python
-def merge(rasters: Sequence, **kwargs) -> Raster
+def merge(rasters: Sequence,
+          *,
+          method: Union[Literal["first", "last", "min", "max", "sum", "count",
+                                "mean"], Callable] = "first",
+          **kwargs) -> Raster
 ```
 
 Wraps `rasterio.merge.merge` to operate on Raster instances as well as
 rasterio datasets.
+
+The `method` argument specifies how to handle overlapping pixels. See
+https://rasterio.readthedocs.io/en/stable/api/rasterio.merge.html for
+details on the available methods.
+
+In addition to rasterio's built-in methods listed above, this also supports
+a `mean` method that returns the mean of all valid overlapping pixels.
 
 <a id="demeter.raster.utils.merge.merge_min"></a>
 
@@ -730,4 +785,157 @@ def check_for_overlapping_pixels(merged_data, new_data, merged_mask, new_mask,
 When passed as the `method` argument to `rasterio.merge.merge`, this
 function checks whether any two rasters have data for the same pixel.
 If they do, it logs a warning.
+
+<a id="demeter.raster.utils.reprojection"></a>
+
+# demeter.raster.utils.reprojection
+
+<a id="demeter.raster.utils.reprojection.reproject"></a>
+
+#### reproject
+
+```python
+def reproject(raster: Union[str, Raster],
+              crs: str,
+              resampling_method: Literal[
+                  "nearest",
+                  "bilinear",
+                  "cubic",
+                  "cubic_spline",
+                  "lanczos",
+                  "average",
+                  "mode",
+                  "gauss",
+                  "max",
+                  "min",
+                  "med",
+                  "q1",
+                  "q3",
+                  "sum",
+                  "rms",
+              ],
+              align_to_transform: Optional[rasterio.Affine] = None) -> Raster
+```
+
+Reproject a raster to a different coordinate reference system.
+
+This is a lossy operation as it involves resampling. The resampling
+algorithm to use depends on the nature of the data: `nearest` is a good
+choice for categorical data, whereas `bilinear` or `average` might make
+more sense for continuous data. See
+https://rasterio.readthedocs.io/en/stable/api/rasterio.enums.html#rasterio.enums.Resampling
+for the list of available resampling algorithms.
+
+If `align_to_transform` is provided, align the output raster to the given
+transform's pixel grid. This will perform up/downsampling if the given
+transform's resolution doesn't match the input raster's resolution.
+
+<a id="demeter.raster.utils.reprojection.align"></a>
+
+#### align
+
+```python
+def align(
+    raster: Union[str, Raster], to: Union[str,
+                                          Raster], resampling_method: Literal[
+                                              "nearest",
+                                              "bilinear",
+                                              "cubic",
+                                              "cubic_spline",
+                                              "lanczos",
+                                              "average",
+                                              "mode",
+                                              "gauss",
+                                              "max",
+                                              "min",
+                                              "med",
+                                              "q1",
+                                              "q3",
+                                              "sum",
+                                              "rms",
+                                          ]
+) -> Raster
+```
+
+Align a raster to another raster's grid.
+
+<a id="demeter.raster.utils.reprojection.reproject_and_merge"></a>
+
+#### reproject\_and\_merge
+
+```python
+def reproject_and_merge(rasters: Iterable[Union[str, Raster]],
+                        crs: str,
+                        resampling_method: Literal[
+                            "nearest",
+                            "bilinear",
+                            "cubic",
+                            "cubic_spline",
+                            "lanczos",
+                            "average",
+                            "mode",
+                            "gauss",
+                            "max",
+                            "min",
+                            "med",
+                            "q1",
+                            "q3",
+                            "sum",
+                            "rms",
+                        ],
+                        merge_method: Union[Literal["first", "last", "min",
+                                                    "max", "sum", "count",
+                                                    "mean"],
+                                            Callable] = "first",
+                        align_to_transform: Optional[rasterio.Affine] = None,
+                        **kwargs) -> Raster
+```
+
+Reproject multiple rasters to a common CRS, then merge them.
+
+The `merge_method` argument specifies how to handle overlapping
+pixels. Other arguments are passed to `merge`. Example:
+
+```python
+merged = reproject_and_merge(
+    rasters,
+    crs="EPSG:4326",
+    resampling_method="average",  # how to resample when reprojecting
+    merge_method="mean",          # how to merge overlapping pixels
+)
+```
+
+<a id="demeter.raster.utils.reprojection.align_and_merge"></a>
+
+#### align\_and\_merge
+
+```python
+def align_and_merge(rasters: Iterable[Union[str, Raster]],
+                    to: Union[str, Raster],
+                    resampling_method: Literal[
+                        "nearest",
+                        "bilinear",
+                        "cubic",
+                        "cubic_spline",
+                        "lanczos",
+                        "average",
+                        "mode",
+                        "gauss",
+                        "max",
+                        "min",
+                        "med",
+                        "q1",
+                        "q3",
+                        "sum",
+                        "rms",
+                    ],
+                    merge_method: Union[Literal["first", "last", "min", "max",
+                                                "sum", "count", "mean"],
+                                        Callable] = "first",
+                    **kwargs) -> Raster
+```
+
+Align multiple rasters to the given raster's grid, then merge them.
+
+Keyword arguments are passed to `merge`.
 
