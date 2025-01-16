@@ -122,6 +122,40 @@ def shape() -> tuple[int, int]
 
 Height and width of the raster.
 
+<a id="demeter.raster.Raster.bounds"></a>
+
+#### bounds
+
+```python
+@property
+def bounds() -> tuple[float, float, float, float]
+```
+
+The raster's bounds, in the raster's CRS.
+
+<a id="demeter.raster.Raster.resolution"></a>
+
+#### resolution
+
+```python
+@property
+def resolution() -> tuple[float, float]
+```
+
+The raster's (x, y) resolution.
+
+<a id="demeter.raster.Raster.grid_offset"></a>
+
+#### grid\_offset
+
+```python
+@property
+def grid_offset() -> tuple[float, float]
+```
+
+The (x, y) offset of this raster's origin point on a grid aligned with
+its resolution.
+
 <a id="demeter.raster.Raster.dtype"></a>
 
 #### dtype
