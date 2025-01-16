@@ -134,7 +134,10 @@ def fetch_and_merge_rasters(
                 with DBF(f"{raster_path}.vat.dbf", raw=True) as dbf:
                     for record in dbf:
                         try:
-                            catchment_id = int(record["NHDPlusID"])
+                            # Catchment IDs are encoded as floats for some
+                            # reason, but they're really integers.
+                            catchment_id = float(record["NHDPlusID"])
+                            catchment_id = int(catchment_id)
                         except ValueError:
                             # FIXME: Some dbf records contain a sequence of
                             # null characters as NHDPlusID. Example:
@@ -154,8 +157,7 @@ def fetch_and_merge_rasters(
                             # log a warning if we try to access them.
                             continue
 
-                        value = int(record["VALUE"])
-                        count = int(record["COUNT"])
+                        value, count = _extract_value_and_count_from_dbf_record(record)
                         counts[catchment_id] += count
                         value_to_catchment_id_mapping[value] = catchment_id
 
@@ -208,8 +210,7 @@ def fetch_and_merge_rasters(
             for raster_path in raster_paths:
                 with DBF(f"{raster_path}.vat.dbf") as dbf:
                     for record in dbf:
-                        value = int(record["VALUE"])
-                        count = int(record["COUNT"])
+                        value, count = _extract_value_and_count_from_dbf_record(record)
                         counts[value] += count
 
         merged = merge_and_crop_rasters(
@@ -333,3 +334,17 @@ def _find_raster_path_in_archive(zip_archive: ZipFile, raster_filename: str) -> 
         )
 
     return raster_paths[0]
+
+
+def _extract_value_and_count_from_dbf_record(record) -> tuple[int, int]:
+    try:
+        value = record["VALUE"]
+    except KeyError:
+        value = record["Value"]
+
+    try:
+        count = record["COUNT"]
+    except KeyError:
+        count = record["Count"]
+
+    return int(value), int(count)
